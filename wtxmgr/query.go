@@ -9,7 +9,7 @@ import (
 	"fmt"
 
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcutil"
+	"github.com/parallelcointeam/btcutil"
 	"github.com/btcsuite/btcwallet/walletdb"
 )
 

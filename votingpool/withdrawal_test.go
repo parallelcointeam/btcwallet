@@ -8,8 +8,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/btcsuite/btcutil"
-	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/parallelcointeam/btcutil"
+	"github.com/parallelcointeam/btcutil/hdkeychain"
 	vp "github.com/btcsuite/btcwallet/votingpool"
 )
 

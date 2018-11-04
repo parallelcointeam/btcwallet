@@ -6,8 +6,8 @@ import (
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcutil"
-	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/parallelcointeam/btcutil"
+	"github.com/parallelcointeam/btcutil/hdkeychain"
 	"github.com/btcsuite/btcwallet/internal/zero"
 	"github.com/btcsuite/btcwallet/walletdb"
 )

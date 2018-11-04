@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/parallelcointeam/btcutil/hdkeychain"
 	vp "github.com/btcsuite/btcwallet/votingpool"
 	"github.com/btcsuite/btcwallet/waddrmgr"
 	"github.com/btcsuite/btcwallet/walletdb"

@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/parallelcointeam/btcutil/hdkeychain"
 	"github.com/btcsuite/btcwallet/waddrmgr"
 )
 

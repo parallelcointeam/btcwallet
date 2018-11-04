@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/parallelcointeam/btcutil"
 	. "github.com/btcsuite/btcwallet/wallet/txauthor"
 	"github.com/btcsuite/btcwallet/wallet/txrules"
 
