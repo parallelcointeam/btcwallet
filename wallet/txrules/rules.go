@@ -9,7 +9,7 @@ package txrules
 import (
 	"errors"
 
-	"github.com/parallelcointeam/btcutil"
+	"github.com/parallelcointeam/pod/btcutil"
 	"github.com/parallelcointeam/pod/txscript"
 	"github.com/parallelcointeam/pod/wire"
 )

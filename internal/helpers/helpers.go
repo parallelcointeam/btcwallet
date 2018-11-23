@@ -7,7 +7,7 @@
 package helpers
 
 import (
-	"github.com/parallelcointeam/btcutil"
+	"github.com/parallelcointeam/pod/btcutil"
 	"github.com/parallelcointeam/pod/wire"
 )
 

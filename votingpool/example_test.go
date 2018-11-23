@@ -24,14 +24,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/parallelcointeam/btcutil"
-	"github.com/btcsuite/btcwallet/votingpool"
-	"github.com/btcsuite/btcwallet/waddrmgr"
-	"github.com/btcsuite/btcwallet/walletdb"
-	_ "github.com/btcsuite/btcwallet/walletdb/bdb"
-	"github.com/btcsuite/btcwallet/wtxmgr"
+	"github.com/parallelcointeam/pod/chaincfg"
+	"github.com/parallelcointeam/pod/txscript"
+	"github.com/parallelcointeam/pod/btcutil"
+	"github.com/parallelcointeam/mod/votingpool"
+	"github.com/parallelcointeam/mod/waddrmgr"
+	"github.com/parallelcointeam/mod/walletdb"
+	_ "github.com/parallelcointeam/mod/walletdb/bdb"
+	"github.com/parallelcointeam/mod/wtxmgr"
 )
 
 var (

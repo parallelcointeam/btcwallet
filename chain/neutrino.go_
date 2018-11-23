@@ -6,27 +6,27 @@ import (
 	"sync"
 	"time"
 
-	"github.com/parallelcointeam/mod/waddrmgr"
-	"github.com/parallelcointeam/mod/wtxmgr"
-	"github.com/parallelcointeam/pod/btcutil"
-	"github.com/parallelcointeam/pod/btcutil/gcs"
-	"github.com/parallelcointeam/pod/btcutil/gcs/builder"
 	"github.com/parallelcointeam/pod/chaincfg"
 	"github.com/parallelcointeam/pod/chaincfg/chainhash"
 	"github.com/parallelcointeam/pod/rpcclient"
 	"github.com/parallelcointeam/pod/txscript"
 	"github.com/parallelcointeam/pod/wire"
-	sac "github.com/parallelcointeam/sac"
+	"github.com/parallelcointeam/pod/btcutil"
+	"github.com/parallelcointeam/pod/btcutil/gcs"
+	"github.com/parallelcointeam/pod/btcutil/gcs/builder"
+	"github.com/parallelcointeam/mod/waddrmgr"
+	"github.com/parallelcointeam/mod/wtxmgr"
+	"github.com/parallelcointeam/sac"
 )
 
 // NeutrinoClient is an implementation of the btcwalet chain.Interface interface.
 type NeutrinoClient struct {
-	CS *sac.ChainService
+	CS *neutrino.ChainService
 
 	chainParams *chaincfg.Params
 
 	// We currently support one rescan/notifiction goroutine per client
-	rescan *sac.Rescan
+	rescan *neutrino.Rescan
 
 	enqueueNotification chan interface{}
 	dequeueNotification chan interface{}
@@ -49,7 +49,7 @@ type NeutrinoClient struct {
 // NewNeutrinoClient creates a new NeutrinoClient struct with a backing
 // ChainService.
 func NewNeutrinoClient(chainParams *chaincfg.Params,
-	chainService *sac.ChainService) *NeutrinoClient {
+	chainService *neutrino.ChainService) *NeutrinoClient {
 
 	return &NeutrinoClient{
 		CS:          chainService,
@@ -369,29 +369,29 @@ func (s *NeutrinoClient) Rescan(startHash *chainhash.Hash, addrs []btcutil.Addre
 		}
 	}
 
-	var inputsToWatch []sac.InputWithScript
+	var inputsToWatch []neutrino.InputWithScript
 	for op, addr := range outPoints {
 		addrScript, err := txscript.PayToAddrScript(addr)
 		if err != nil {
 		}
 
-		inputsToWatch = append(inputsToWatch, sac.InputWithScript{
+		inputsToWatch = append(inputsToWatch, neutrino.InputWithScript{
 			OutPoint: op,
 			PkScript: addrScript,
 		})
 	}
 
 	newRescan := s.CS.NewRescan(
-		sac.NotificationHandlers(rpcclient.NotificationHandlers{
+		neutrino.NotificationHandlers(rpcclient.NotificationHandlers{
 			OnBlockConnected:         s.onBlockConnected,
 			OnFilteredBlockConnected: s.onFilteredBlockConnected,
 			OnBlockDisconnected:      s.onBlockDisconnected,
 		}),
-		sac.StartBlock(&waddrmgr.BlockStamp{Hash: *startHash}),
-		sac.StartTime(s.startTime),
-		sac.QuitChan(s.rescanQuit),
-		sac.WatchAddrs(addrs...),
-		sac.WatchInputs(inputsToWatch...),
+		neutrino.StartBlock(&waddrmgr.BlockStamp{Hash: *startHash}),
+		neutrino.StartTime(s.startTime),
+		neutrino.QuitChan(s.rescanQuit),
+		neutrino.WatchAddrs(addrs...),
+		neutrino.WatchInputs(inputsToWatch...),
 	)
 	s.rescan = newRescan
 	s.rescanErr = s.rescan.Start()
@@ -420,7 +420,7 @@ func (s *NeutrinoClient) NotifyReceived(addrs []btcutil.Address) error {
 	// addresses to the watch list.
 	if s.scanning {
 		s.clientMtx.Unlock()
-		return s.rescan.Update(sac.AddAddrs(addrs...))
+		return s.rescan.Update(neutrino.AddAddrs(addrs...))
 	}
 
 	s.rescanQuit = make(chan struct{})
@@ -432,14 +432,14 @@ func (s *NeutrinoClient) NotifyReceived(addrs []btcutil.Address) error {
 
 	// Rescan with just the specified addresses.
 	newRescan := s.CS.NewRescan(
-		sac.NotificationHandlers(rpcclient.NotificationHandlers{
+		neutrino.NotificationHandlers(rpcclient.NotificationHandlers{
 			OnBlockConnected:         s.onBlockConnected,
 			OnFilteredBlockConnected: s.onFilteredBlockConnected,
 			OnBlockDisconnected:      s.onBlockDisconnected,
 		}),
-		sac.StartTime(s.startTime),
-		sac.QuitChan(s.rescanQuit),
-		sac.WatchAddrs(addrs...),
+		neutrino.StartTime(s.startTime),
+		neutrino.QuitChan(s.rescanQuit),
+		neutrino.WatchAddrs(addrs...),
 	)
 	s.rescan = newRescan
 	s.rescanErr = s.rescan.Start()

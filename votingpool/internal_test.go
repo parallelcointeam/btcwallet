@@ -5,10 +5,10 @@
 package votingpool
 
 import (
-	"github.com/btcsuite/btcd/wire"
-	"github.com/parallelcointeam/btcutil/hdkeychain"
-	"github.com/btcsuite/btcwallet/waddrmgr"
-	"github.com/btcsuite/btcwallet/walletdb"
+	"github.com/parallelcointeam/pod/wire"
+	"github.com/parallelcointeam/pod/btcutil/hdkeychain"
+	"github.com/parallelcointeam/mod/waddrmgr"
+	"github.com/parallelcointeam/mod/walletdb"
 )
 
 var TstLastErr = lastErr

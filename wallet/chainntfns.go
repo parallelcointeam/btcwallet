@@ -8,11 +8,11 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcwallet/chain"
-	"github.com/btcsuite/btcwallet/waddrmgr"
-	"github.com/btcsuite/btcwallet/walletdb"
-	"github.com/btcsuite/btcwallet/wtxmgr"
+	"github.com/parallelcointeam/pod/txscript"
+	"github.com/parallelcointeam/mod/chain"
+	"github.com/parallelcointeam/mod/waddrmgr"
+	"github.com/parallelcointeam/mod/walletdb"
+	"github.com/parallelcointeam/mod/wtxmgr"
 )
 
 func (w *Wallet) handleChainNotifications() {

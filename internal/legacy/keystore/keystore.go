@@ -24,13 +24,13 @@ import (
 
 	"golang.org/x/crypto/ripemd160"
 
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/parallelcointeam/btcutil"
-	"github.com/btcsuite/btcwallet/internal/legacy/rename"
+	"github.com/parallelcointeam/pod/btcec"
+	"github.com/parallelcointeam/pod/chaincfg"
+	"github.com/parallelcointeam/pod/chaincfg/chainhash"
+	"github.com/parallelcointeam/pod/txscript"
+	"github.com/parallelcointeam/pod/wire"
+	"github.com/parallelcointeam/pod/btcutil"
+	"github.com/parallelcointeam/mod/internal/legacy/rename"
 )
 
 const (

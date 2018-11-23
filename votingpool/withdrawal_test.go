@@ -8,9 +8,9 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/parallelcointeam/btcutil"
-	"github.com/parallelcointeam/btcutil/hdkeychain"
-	vp "github.com/btcsuite/btcwallet/votingpool"
+	"github.com/parallelcointeam/pod/btcutil"
+	"github.com/parallelcointeam/pod/btcutil/hdkeychain"
+	vp "github.com/parallelcointeam/mod/votingpool"
 )
 
 func TestStartWithdrawal(t *testing.T) {

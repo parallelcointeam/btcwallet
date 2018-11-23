@@ -8,7 +8,7 @@ import (
 	"github.com/parallelcointeam/pod/blockchain"
 	"github.com/parallelcointeam/pod/wire"
 
-	h "github.com/parallelcointeam/btcwallet/internal/helpers"
+	h "github.com/parallelcointeam/mod/internal/helpers"
 )
 
 // Worst case script and input/output size estimates.

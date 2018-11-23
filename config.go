@@ -15,13 +15,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/parallelcointeam/btcutil"
-	"github.com/btcsuite/btcwallet/internal/cfgutil"
-	"github.com/btcsuite/btcwallet/internal/legacy/keystore"
-	"github.com/btcsuite/btcwallet/netparams"
-	"github.com/btcsuite/btcwallet/wallet"
 	flags "github.com/jessevdk/go-flags"
-	"github.com/lightninglabs/neutrino"
+	"github.com/parallelcointeam/mod/internal/cfgutil"
+	"github.com/parallelcointeam/mod/internal/legacy/keystore"
+	"github.com/parallelcointeam/mod/netparams"
+	"github.com/parallelcointeam/mod/wallet"
+	"github.com/parallelcointeam/pod/btcutil"
 )
 
 const (
@@ -270,9 +269,9 @@ func loadConfig() (*config, []string, error) {
 		UseSPV:                 false,
 		AddPeers:               []string{},
 		ConnectPeers:           []string{},
-		MaxPeers:               neutrino.MaxPeers,
-		BanDuration:            neutrino.BanDuration,
-		BanThreshold:           neutrino.BanThreshold,
+		MaxPeers:               sac.MaxPeers,
+		BanDuration:            sac.BanDuration,
+		BanThreshold:           sac.BanThreshold,
 	}
 
 	// Pre-parse the command line options to see if an alternative config
@@ -502,9 +501,9 @@ func loadConfig() (*config, []string, error) {
 	}
 
 	if cfg.UseSPV {
-		neutrino.MaxPeers = cfg.MaxPeers
-		neutrino.BanDuration = cfg.BanDuration
-		neutrino.BanThreshold = cfg.BanThreshold
+		sac.MaxPeers = cfg.MaxPeers
+		sac.BanDuration = cfg.BanDuration
+		sac.BanThreshold = cfg.BanThreshold
 	} else {
 		if cfg.RPCConnect == "" {
 			cfg.RPCConnect = net.JoinHostPort("localhost", activeNet.RPCClientPort)
