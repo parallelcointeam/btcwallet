@@ -458,7 +458,7 @@ func getBalance(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 		}
 		balance = bals.Spendable
 	}
-	return balance.ToBTC(), nil
+	return balance.ToDUO(), nil
 }
 
 // getBestBlock handles a getbestblock request by returning a JSON object
@@ -505,7 +505,7 @@ func getInfo(icmd interface{}, w *wallet.Wallet, chainClient *chain.RPCClient) (
 	// TODO(davec): This should probably have a database version as opposed
 	// to using the manager version.
 	info.WalletVersion = int32(waddrmgr.LatestMgrVersion)
-	info.Balance = bal.ToBTC()
+	info.Balance = bal.ToDUO()
 	info.PaytxFee = float64(txrules.DefaultRelayFeePerKb)
 	// We don't set the following since they don't make much sense in the
 	// wallet architecture:
@@ -597,7 +597,7 @@ func getUnconfirmedBalance(icmd interface{}, w *wallet.Wallet) (interface{}, err
 		return nil, err
 	}
 
-	return (bals.Total - bals.Spendable).ToBTC(), nil
+	return (bals.Total - bals.Spendable).ToDUO(), nil
 }
 
 // importPrivKey handles an importprivkey request by parsing
@@ -760,7 +760,7 @@ func getReceivedByAccount(icmd interface{}, w *wallet.Wallet) (interface{}, erro
 	if account == waddrmgr.ImportedAddrAccount {
 		acctIndex = len(results) - 1
 	}
-	return results[acctIndex].TotalReceived.ToBTC(), nil
+	return results[acctIndex].TotalReceived.ToDUO(), nil
 }
 
 // getReceivedByAddress handles a getreceivedbyaddress request by returning
@@ -777,7 +777,7 @@ func getReceivedByAddress(icmd interface{}, w *wallet.Wallet) (interface{}, erro
 		return nil, err
 	}
 
-	return total.ToBTC(), nil
+	return total.ToDUO(), nil
 }
 
 // getTransaction handles a gettransaction request by returning details about
@@ -850,7 +850,7 @@ func getTransaction(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 			outputTotal += btcutil.Amount(output.Value)
 		}
 		fee = debitTotal - outputTotal
-		feeF64 = fee.ToBTC()
+		feeF64 = fee.ToDUO()
 	}
 
 	if len(details.Debits) == 0 {
@@ -873,7 +873,7 @@ func getTransaction(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 			// details for transaction outputs, just like
 			// listtransactions (but using the short result format).
 			Category: "send",
-			Amount:   (-debitTotal).ToBTC(), // negative since it is a send
+			Amount:   (-debitTotal).ToDUO(), // negative since it is a send
 			Fee:      &feeF64,
 		}
 		ret.Fee = feeF64
@@ -909,12 +909,12 @@ func getTransaction(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 			Account:  accountName,
 			Address:  address,
 			Category: credCat,
-			Amount:   cred.Amount.ToBTC(),
+			Amount:   cred.Amount.ToDUO(),
 			Vout:     cred.Index,
 		})
 	}
 
-	ret.Amount = creditTotal.ToBTC()
+	ret.Amount = creditTotal.ToDUO()
 	return ret, nil
 }
 
@@ -1049,7 +1049,7 @@ func listAccounts(icmd interface{}, w *wallet.Wallet) (interface{}, error) {
 		return nil, err
 	}
 	for _, result := range results {
-		accountBalances[result.AccountName] = result.AccountBalance.ToBTC()
+		accountBalances[result.AccountName] = result.AccountBalance.ToDUO()
 	}
 	// Return the map.  This will be marshaled into a JSON object.
 	return accountBalances, nil
@@ -1085,7 +1085,7 @@ func listReceivedByAccount(icmd interface{}, w *wallet.Wallet) (interface{}, err
 	for _, result := range results {
 		jsonResults = append(jsonResults, btcjson.ListReceivedByAccountResult{
 			Account:       result.AccountName,
-			Amount:        result.TotalReceived.ToBTC(),
+			Amount:        result.TotalReceived.ToDUO(),
 			Confirmations: uint64(result.LastConfirmation),
 		})
 	}
@@ -1182,7 +1182,7 @@ func listReceivedByAddress(icmd interface{}, w *wallet.Wallet) (interface{}, err
 	for address, addrData := range allAddrData {
 		ret[idx] = btcjson.ListReceivedByAddressResult{
 			Address:       address,
-			Amount:        addrData.amount.ToBTC(),
+			Amount:        addrData.amount.ToDUO(),
 			Confirmations: uint64(addrData.confirmations),
 			TxIDs:         addrData.tx,
 		}

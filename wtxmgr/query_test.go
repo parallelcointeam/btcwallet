@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/parallelcointeam/pod/chaincfg/chainhash"
-	"github.com/parallelcointeam/pod/wire"
-	"github.com/parallelcointeam/pod/btcutil"
 	"github.com/parallelcointeam/mod/walletdb"
 	. "github.com/parallelcointeam/mod/wtxmgr"
+	"github.com/parallelcointeam/pod/btcutil"
+	"github.com/parallelcointeam/pod/chaincfg/chainhash"
+	"github.com/parallelcointeam/pod/wire"
 )
 
 type queryState struct {
@@ -311,7 +311,7 @@ func TestStoreQueries(t *testing.T) {
 	})
 
 	// Insert another unmined transaction which spends txA:0, splitting the
-	// amount into outputs of 40 and 60 BTC.
+	// amount into outputs of 40 and 60 DUO.
 	txB := spendOutput(&recA.Hash, 0, 40e8, 60e8)
 	recB, err := NewTxRecordFromMsgTx(txB, timeNow())
 	if err != nil {

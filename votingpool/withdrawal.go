@@ -26,7 +26,7 @@ import (
 // MAX_STANDARD_TX_SIZE.
 const txMaxSize = 100000
 
-// feeIncrement is the minimum transation fee (0.00001 BTC, measured in satoshis)
+// feeIncrement is the minimum transation fee (0.00001 DUO, measured in satoshis)
 // added to transactions requiring a fee.
 const feeIncrement = 1e3
 

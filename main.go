@@ -10,15 +10,12 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
-	"path/filepath"
 	"runtime"
 	"sync"
 
 	"github.com/parallelcointeam/mod/chain"
 	"github.com/parallelcointeam/mod/rpc/legacyrpc"
 	"github.com/parallelcointeam/mod/wallet"
-	"github.com/parallelcointeam/mod/walletdb"
-	"github.com/parallelcointeam/sac"
 )
 
 var (
@@ -185,11 +182,11 @@ func rpcClientConnectLoop(legacyRPCServer *legacyrpc.Server, loader *wallet.Load
 		// 		log.Errorf("Couldn't start Neutrino client: %s", err)
 		// 	}
 		// } else {
-			chainClient, err = startChainRPC(certs)
-			if err != nil {
-				log.Errorf("Unable to open connection to consensus RPC server: %v", err)
-				continue
-			}
+		chainClient, err = startChainRPC(certs)
+		if err != nil {
+			log.Errorf("Unable to open connection to consensus RPC server: %v", err)
+			continue
+		}
 		// }
 
 		// Rather than inlining this logic directly into the loader
