@@ -9,16 +9,16 @@ import (
 	"sync"
 	"time"
 
+	"github.com/parallelcointeam/mod/waddrmgr"
+	"github.com/parallelcointeam/mod/wtxmgr"
 	"github.com/parallelcointeam/pod/btcjson"
+	"github.com/parallelcointeam/pod/btcutil"
+	"github.com/parallelcointeam/pod/btcutil/gcs"
+	"github.com/parallelcointeam/pod/btcutil/gcs/builder"
 	"github.com/parallelcointeam/pod/chaincfg"
 	"github.com/parallelcointeam/pod/chaincfg/chainhash"
 	"github.com/parallelcointeam/pod/rpcclient"
 	"github.com/parallelcointeam/pod/wire"
-	"github.com/parallelcointeam/pod/btcutil"
-	"github.com/parallelcointeam/pod/btcutil/gcs"
-	"github.com/parallelcointeam/pod/btcutil/gcs/builder"
-	"github.com/parallelcointeam/mod/waddrmgr"
-	"github.com/parallelcointeam/mod/wtxmgr"
 )
 
 // RPCClient represents a persistent client connection to a bitcoin RPC server
@@ -61,7 +61,7 @@ func NewRPCClient(chainParams *chaincfg.Params, connect, user, pass string, cert
 			Certificates:         certs,
 			DisableAutoReconnect: false,
 			DisableConnectOnNew:  true,
-			DisableTLS:           disableTLS,
+			TLS:                  disableTLS,
 		},
 		chainParams:         chainParams,
 		reconnectAttempts:   reconnectAttempts,

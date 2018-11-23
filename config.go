@@ -37,7 +37,7 @@ const (
 
 var (
 	btcdDefaultCAFile  = filepath.Join(btcutil.AppDataDir("btcd", false), "rpc.cert")
-	defaultAppDataDir  = btcutil.AppDataDir("btcwallet", false)
+	defaultAppDataDir  = btcutil.AppDataDir("mod", false)
 	defaultConfigFile  = filepath.Join(defaultAppDataDir, defaultConfigFilename)
 	defaultRPCKeyFile  = filepath.Join(defaultAppDataDir, "rpc.key")
 	defaultRPCCertFile = filepath.Join(defaultAppDataDir, "rpc.cert")
@@ -62,17 +62,17 @@ type config struct {
 	WalletPass string `long:"walletpass" default-mask:"-" description:"The public wallet password -- Only required if the wallet was created with one"`
 
 	// RPC client options
-	RPCConnect       string                  `short:"c" long:"rpcconnect" description:"Hostname/IP and port of btcd RPC server to connect to (default localhost:8334, testnet: localhost:18334, simnet: localhost:18556)"`
-	CAFile           *cfgutil.ExplicitString `long:"cafile" description:"File containing root certificates to authenticate a TLS connections with btcd"`
-	DisableClientTLS bool                    `long:"noclienttls" description:"Disable TLS for the RPC client -- NOTE: This is only allowed if the RPC client is connecting to localhost"`
-	BtcdUsername     string                  `long:"btcdusername" description:"Username for btcd authentication"`
-	BtcdPassword     string                  `long:"btcdpassword" default-mask:"-" description:"Password for btcd authentication"`
-	Proxy            string                  `long:"proxy" description:"Connect via SOCKS5 proxy (eg. 127.0.0.1:9050)"`
-	ProxyUser        string                  `long:"proxyuser" description:"Username for proxy server"`
-	ProxyPass        string                  `long:"proxypass" default-mask:"-" description:"Password for proxy server"`
+	RPCConnect      string                  `short:"c" long:"rpcconnect" description:"Hostname/IP and port of btcd RPC server to connect to (default localhost:11048, testnet: localhost:21048, simnet: localhost:41048)"`
+	CAFile          *cfgutil.ExplicitString `long:"cafile" description:"File containing root certificates to authenticate a TLS connections with btcd"`
+	EnableClientTLS bool                    `long:"clienttls" description:"Enable TLS for the RPC client"`
+	BtcdUsername    string                  `long:"btcdusername" description:"Username for btcd authentication"`
+	BtcdPassword    string                  `long:"btcdpassword" default-mask:"-" description:"Password for btcd authentication"`
+	Proxy           string                  `long:"proxy" description:"Connect via SOCKS5 proxy (eg. 127.0.0.1:9050)"`
+	ProxyUser       string                  `long:"proxyuser" description:"Username for proxy server"`
+	ProxyPass       string                  `long:"proxypass" default-mask:"-" description:"Password for proxy server"`
 
 	// SPV client options
-	UseSPV       bool          `long:"usespv" description:"Enables the experimental use of SPV rather than RPC for chain synchronization"`
+	// UseSPV       bool          `long:"usespv" description:"Enables the experimental use of SPV rather than RPC for chain synchronization"`
 	AddPeers     []string      `short:"a" long:"addpeer" description:"Add a peer to connect with at startup"`
 	ConnectPeers []string      `long:"connect" description:"Connect only to the specified peers at startup"`
 	MaxPeers     int           `long:"maxpeers" description:"Max number of inbound and outbound peers"`
@@ -90,8 +90,8 @@ type config struct {
 	RPCCert                *cfgutil.ExplicitString `long:"rpccert" description:"File containing the certificate file"`
 	RPCKey                 *cfgutil.ExplicitString `long:"rpckey" description:"File containing the certificate key"`
 	OneTimeTLSKey          bool                    `long:"onetimetlskey" description:"Generate a new TLS certpair at startup, but only write the certificate to disk"`
-	DisableServerTLS       bool                    `long:"noservertls" description:"Disable TLS for the RPC server -- NOTE: This is only allowed if the RPC server is bound to localhost"`
-	LegacyRPCListeners     []string                `long:"rpclisten" description:"Listen for legacy RPC connections on this interface/port (default port: 8332, testnet: 18332, simnet: 18554)"`
+	EnableServerTLS        bool                    `long:"servertls" description:"Disable TLS for the RPC server -- NOTE: This is only allowed if the RPC server is bound to localhost"`
+	LegacyRPCListeners     []string                `long:"rpclisten" description:"Listen for legacy RPC connections on this interface/port (default port: 11046, testnet: 21046, simnet: 41046)"`
 	LegacyRPCMaxClients    int64                   `long:"rpcmaxclients" description:"Max number of legacy RPC clients for standard connections"`
 	LegacyRPCMaxWebsockets int64                   `long:"rpcmaxwebsockets" description:"Max number of legacy RPC websocket connections"`
 	Username               string                  `short:"u" long:"username" description:"Username for legacy RPC and btcd authentication (if btcdusername is unset)"`
@@ -266,9 +266,9 @@ func loadConfig() (*config, []string, error) {
 		LegacyRPCMaxClients:    defaultRPCMaxClients,
 		LegacyRPCMaxWebsockets: defaultRPCMaxWebsockets,
 		DataDir:                cfgutil.NewExplicitString(defaultAppDataDir),
-		UseSPV:                 false,
-		AddPeers:               []string{},
-		ConnectPeers:           []string{},
+		// UseSPV:                 false,
+		AddPeers:     []string{},
+		ConnectPeers: []string{},
 		// MaxPeers:               sac.MaxPeers,
 		// BanDuration:            sac.BanDuration,
 		// BanThreshold:           sac.BanThreshold,
@@ -494,11 +494,11 @@ func loadConfig() (*config, []string, error) {
 		return nil, nil, err
 	}
 
-	localhostListeners := map[string]struct{}{
-		"localhost": {},
-		"127.0.0.1": {},
-		"::1":       {},
-	}
+	// localhostListeners := map[string]struct{}{
+	// 	"localhost": {},
+	// 	"127.0.0.1": {},
+	// 	"::1":       {},
+	// }
 
 	// if cfg.UseSPV {
 	// 	sac.MaxPeers = cfg.MaxPeers
@@ -518,20 +518,20 @@ func loadConfig() (*config, []string, error) {
 		return nil, nil, err
 	}
 
-	RPCHost, _, err := net.SplitHostPort(cfg.RPCConnect)
-	if err != nil {
-		return nil, nil, err
-	}
-	if cfg.DisableClientTLS {
-		if _, ok := localhostListeners[RPCHost]; !ok {
-			str := "%s: the --noclienttls option may not be used " +
-				"when connecting RPC to non localhost " +
-				"addresses: %s"
-			err := fmt.Errorf(str, funcName, cfg.RPCConnect)
-			fmt.Fprintln(os.Stderr, err)
-			fmt.Fprintln(os.Stderr, usageMessage)
-			return nil, nil, err
-		}
+	// RPCHost, _, err := net.SplitHostPort(cfg.RPCConnect)
+	// if err != nil {
+	// 	return nil, nil, err
+	// }
+	if cfg.EnableClientTLS {
+		// if _, ok := localhostListeners[RPCHost]; !ok {
+		// 	str := "%s: the --noclienttls option may not be used " +
+		// 		"when connecting RPC to non localhost " +
+		// 		"addresses: %s"
+		// 	err := fmt.Errorf(str, funcName, cfg.RPCConnect)
+		// 	fmt.Fprintln(os.Stderr, err)
+		// 	fmt.Fprintln(os.Stderr, usageMessage)
+		// 	return nil, nil, err
+		// }
 	} else {
 		// If CAFile is unset, choose either the copy or local btcd cert.
 		if !cfg.CAFile.ExplicitlySet() {
@@ -545,17 +545,17 @@ func loadConfig() (*config, []string, error) {
 				return nil, nil, err
 			}
 			if !certExists {
-				if _, ok := localhostListeners[RPCHost]; ok {
-					btcdCertExists, err := cfgutil.FileExists(
-						btcdDefaultCAFile)
-					if err != nil {
-						fmt.Fprintln(os.Stderr, err)
-						return nil, nil, err
-					}
-					if btcdCertExists {
-						cfg.CAFile.Value = btcdDefaultCAFile
-					}
+				// if _, ok := localhostListeners[RPCHost]; ok {
+				btcdCertExists, err := cfgutil.FileExists(
+					btcdDefaultCAFile)
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					return nil, nil, err
 				}
+				if btcdCertExists {
+					cfg.CAFile.Value = btcdDefaultCAFile
+				}
+				// }
 			}
 		}
 	}
@@ -615,11 +615,10 @@ func loadConfig() (*config, []string, error) {
 
 	// Only allow server TLS to be disabled if the RPC server is bound to
 	// localhost addresses.
-	if cfg.DisableServerTLS {
+	if !cfg.EnableServerTLS {
 		allListeners := append(cfg.LegacyRPCListeners,
 			cfg.ExperimentalRPCListeners...)
 		for _, addr := range allListeners {
-			host, _, err := net.SplitHostPort(addr)
 			if err != nil {
 				str := "%s: RPC listen interface '%s' is " +
 					"invalid: %v"
@@ -628,15 +627,16 @@ func loadConfig() (*config, []string, error) {
 				fmt.Fprintln(os.Stderr, usageMessage)
 				return nil, nil, err
 			}
-			if _, ok := localhostListeners[host]; !ok {
-				str := "%s: the --noservertls option may not be used " +
-					"when binding RPC to non localhost " +
-					"addresses: %s"
-				err := fmt.Errorf(str, funcName, addr)
-				fmt.Fprintln(os.Stderr, err)
-				fmt.Fprintln(os.Stderr, usageMessage)
-				return nil, nil, err
-			}
+			// host, _, err := net.SplitHostPort(addr)
+			// if _, ok := localhostListeners[host]; !ok {
+			// 	str := "%s: the --noservertls option may not be used " +
+			// 		"when binding RPC to non localhost " +
+			// 		"addresses: %s"
+			// 	err := fmt.Errorf(str, funcName, addr)
+			// 	fmt.Fprintln(os.Stderr, err)
+			// 	fmt.Fprintln(os.Stderr, usageMessage)
+			// 	return nil, nil, err
+			// }
 		}
 	}
 

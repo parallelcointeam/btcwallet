@@ -11,16 +11,16 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/parallelcointeam/pod/btcutil"
+	"github.com/jessevdk/go-flags"
 	"github.com/parallelcointeam/mod/walletdb"
 	_ "github.com/parallelcointeam/mod/walletdb/bdb"
 	"github.com/parallelcointeam/mod/wtxmgr"
-	"github.com/jessevdk/go-flags"
+	"github.com/parallelcointeam/pod/btcutil"
 )
 
 const defaultNet = "mainnet"
 
-var datadir = btcutil.AppDataDir("btcwallet", false)
+var datadir = btcutil.AppDataDir("mod", false)
 
 // Flags.
 var opts = struct {

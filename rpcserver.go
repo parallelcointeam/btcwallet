@@ -16,10 +16,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/parallelcointeam/pod/btcutil"
 	"github.com/parallelcointeam/mod/rpc/legacyrpc"
 	"github.com/parallelcointeam/mod/rpc/rpcserver"
 	"github.com/parallelcointeam/mod/wallet"
+	"github.com/parallelcointeam/pod/btcutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -110,7 +110,7 @@ func startRPCServers(walletLoader *wallet.Loader) (*grpc.Server, *legacyrpc.Serv
 		keyPair      tls.Certificate
 		err          error
 	)
-	if cfg.DisableServerTLS {
+	if !cfg.EnableServerTLS {
 		log.Info("Server TLS is disabled.  Only legacy RPC may be used")
 	} else {
 		keyPair, err = openRPCKeyPair()

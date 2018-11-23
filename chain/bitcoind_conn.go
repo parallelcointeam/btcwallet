@@ -8,11 +8,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/lightninglabs/gozmq"
 	"github.com/parallelcointeam/pod/chaincfg"
 	"github.com/parallelcointeam/pod/chaincfg/chainhash"
 	"github.com/parallelcointeam/pod/rpcclient"
 	"github.com/parallelcointeam/pod/wire"
-	"github.com/lightninglabs/gozmq"
 )
 
 // BitcoindConn represents a persistent client connection to a bitcoind node
@@ -69,7 +69,7 @@ func NewBitcoindConn(chainParams *chaincfg.Params,
 		Pass:                 pass,
 		DisableAutoReconnect: false,
 		DisableConnectOnNew:  true,
-		DisableTLS:           true,
+		TLS:                  false,
 		HTTPPostMode:         true,
 	}
 

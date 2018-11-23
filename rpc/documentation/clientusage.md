@@ -60,7 +60,7 @@ import (
 	"github.com/btcsuite/btcutil"
 )
 
-var certificateFile = filepath.Join(btcutil.AppDataDir("btcwallet", false), "rpc.cert")
+var certificateFile = filepath.Join(btcutil.AppDataDir("mod", false), "rpc.cert")
 
 func main() {
 	creds, err := credentials.NewClientTLSFromFile(certificateFile, "localhost")
@@ -248,7 +248,7 @@ namespace Example
             // certificates (required by btcwallet).
             Environment.SetEnvironmentVariable("GRPC_SSL_CIPHER_SUITES", "HIGH+ECDSA");
 
-            var walletAppData = Portability.LocalAppData(Environment.OSVersion.Platform, "Btcwallet");
+            var walletAppData = Portability.LocalAppData(Environment.OSVersion.Platform, "mod");
             var walletTlsCertFile = Path.Combine(walletAppData, "rpc.cert");
             var cert = await FileUtils.ReadFileAsync(walletTlsCertFile);
             var channel = new Channel("localhost:18332", new SslCredentials(cert));
@@ -418,7 +418,7 @@ def main():
 
     cert_file_path = os.path.join(os.environ['HOME'], '.btcwallet', 'rpc.cert')
     if platform.system() == 'Windows':
-        cert_file_path = os.path.join(os.environ['LOCALAPPDATA'], "Btcwallet", "rpc.cert")
+        cert_file_path = os.path.join(os.environ['LOCALAPPDATA'], "mod", "rpc.cert")
     elif platform.system() == 'Darwin':
         cert_file_path = os.path.join(os.environ['HOME'], 'Library', 'Application Support',
                                       'Btcwallet', 'rpc.cert')

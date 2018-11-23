@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -141,9 +142,9 @@ func walletMain() error {
 // methods.
 func rpcClientConnectLoop(legacyRPCServer *legacyrpc.Server, loader *wallet.Loader) {
 	var certs []byte
-	if !cfg.UseSPV {
-		certs = readCAFile()
-	}
+	// if !cfg.UseSPV {
+	// 	certs = readCAFile()
+	// }
 
 	for {
 		var (
@@ -239,7 +240,7 @@ func rpcClientConnectLoop(legacyRPCServer *legacyrpc.Server, loader *wallet.Load
 func readCAFile() []byte {
 	// Read certificate file if TLS is not disabled.
 	var certs []byte
-	if !cfg.DisableClientTLS {
+	if cfg.EnableClientTLS {
 		var err error
 		certs, err = ioutil.ReadFile(cfg.CAFile.Value)
 		if err != nil {
@@ -260,9 +261,9 @@ func readCAFile() []byte {
 // there is no recovery in case the server is not available or if there is an
 // authentication error.  Instead, all requests to the client will simply error.
 func startChainRPC(certs []byte) (*chain.RPCClient, error) {
-	log.Infof("Attempting RPC client connection to %v", cfg.RPCConnect)
+	log.Infof("Attempting RPC client connection to %v, TLS: %s", cfg.RPCConnect, fmt.Sprint(cfg.EnableClientTLS))
 	rpcc, err := chain.NewRPCClient(activeNet.Params, cfg.RPCConnect,
-		cfg.BtcdUsername, cfg.BtcdPassword, certs, cfg.DisableClientTLS, 0)
+		cfg.BtcdUsername, cfg.BtcdPassword, certs, !cfg.EnableClientTLS, 0)
 	if err != nil {
 		return nil, err
 	}
