@@ -5,11 +5,18 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net"
 	"os"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
 	"strings"
@@ -24,11 +31,11 @@ import (
 )
 
 const (
-	defaultCAFilename       = "btcd.cert"
-	defaultConfigFilename   = "btcwallet.conf"
+	defaultCAFilename       = "mod.cert"
+	defaultConfigFilename   = "mod.conf"
 	defaultLogLevel         = "info"
 	defaultLogDirname       = "logs"
-	defaultLogFilename      = "btcwallet.log"
+	defaultLogFilename      = "mod.log"
 	defaultRPCMaxClients    = 10
 	defaultRPCMaxWebsockets = 25
 
@@ -36,7 +43,7 @@ const (
 )
 
 var (
-	btcdDefaultCAFile  = filepath.Join(btcutil.AppDataDir("btcd", false), "rpc.cert")
+	btcdDefaultCAFile  = filepath.Join(btcutil.AppDataDir("mod", false), "rpc.cert")
 	defaultAppDataDir  = btcutil.AppDataDir("mod", false)
 	defaultConfigFile  = filepath.Join(defaultAppDataDir, defaultConfigFilename)
 	defaultRPCKeyFile  = filepath.Join(defaultAppDataDir, "rpc.key")
@@ -90,7 +97,7 @@ type config struct {
 	RPCCert                *cfgutil.ExplicitString `long:"rpccert" description:"File containing the certificate file"`
 	RPCKey                 *cfgutil.ExplicitString `long:"rpckey" description:"File containing the certificate key"`
 	OneTimeTLSKey          bool                    `long:"onetimetlskey" description:"Generate a new TLS certpair at startup, but only write the certificate to disk"`
-	EnableServerTLS        bool                    `long:"servertls" description:"Disable TLS for the RPC server -- NOTE: This is only allowed if the RPC server is bound to localhost"`
+	EnableServerTLS        bool                    `long:"servertls" description:"Enable TLS for the RPC server"`
 	LegacyRPCListeners     []string                `long:"rpclisten" description:"Listen for legacy RPC connections on this interface/port (default port: 11046, testnet: 21046, simnet: 41046)"`
 	LegacyRPCMaxClients    int64                   `long:"rpcmaxclients" description:"Max number of legacy RPC clients for standard connections"`
 	LegacyRPCMaxWebsockets int64                   `long:"rpcmaxwebsockets" description:"Max number of legacy RPC websocket connections"`
@@ -330,15 +337,15 @@ func loadConfig() (*config, []string, error) {
 		return nil, nil, err
 	}
 
-	// Check deprecated aliases.  The new options receive priority when both
-	// are changed from the default.
-	if cfg.DataDir.ExplicitlySet() {
-		fmt.Fprintln(os.Stderr, "datadir option has been replaced by "+
-			"appdata -- please update your config")
-		if !cfg.AppDataDir.ExplicitlySet() {
-			cfg.AppDataDir.Value = cfg.DataDir.Value
-		}
-	}
+	// // Check deprecated aliases.  The new options receive priority when both
+	// // are changed from the default.
+	// if cfg.DataDir.ExplicitlySet() {
+	// 	fmt.Fprintln(os.Stderr, "datadir option has been replaced by "+
+	// 		"appdata -- please update your config")
+	// 	if !cfg.AppDataDir.ExplicitlySet() {
+	// 		cfg.AppDataDir.Value = cfg.DataDir.Value
+	// 	}
+	// }
 
 	// If an alternate data directory was specified, and paths with defaults
 	// relative to the data dir are unchanged, modify each path to be
@@ -350,6 +357,85 @@ func loadConfig() (*config, []string, error) {
 		}
 		if !cfg.RPCCert.ExplicitlySet() {
 			cfg.RPCCert.Value = filepath.Join(cfg.AppDataDir.Value, "rpc.cert")
+		}
+	}
+
+	if _, err := os.Stat(cfg.DataDir.Value); os.IsNotExist(err) {
+		// Create the destination directory if it does not exists
+		err = os.MkdirAll(cfg.DataDir.Value, 0700)
+		if err != nil {
+			fmt.Println("ERROR", err)
+			return nil, nil, err
+		}
+	}
+
+	var generatedRPCPass, generatedRPCUser string
+
+	if _, err := os.Stat(cfg.ConfigFile.Value); os.IsNotExist(err) {
+
+		// If we can find a pod.conf in the standard location, copy
+		// copy the rpcuser and rpcpassword and TLS setting
+		c := cleanAndExpandPath("~/.pod/pod.conf")
+		// fmt.Println("server config path:", c)
+		// _, err := os.Stat(c)
+		// fmt.Println(err)
+		// fmt.Println(os.IsNotExist(err))
+		if _, err := os.Stat(c); err == nil {
+			fmt.Println("Creating config from pod config")
+
+			createDefaultConfigFile(cfg.ConfigFile.Value, c, cleanAndExpandPath("~/.pod"),
+				cfg.AppDataDir.Value)
+		} else {
+			var bb bytes.Buffer
+			bb.Write(sampleModConf)
+
+			fmt.Println("Writing config file:", cfg.ConfigFile.Value)
+			dest, err := os.OpenFile(cfg.ConfigFile.Value,
+				os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+			if err != nil {
+				fmt.Println("ERROR", err)
+				return nil, nil, err
+			}
+			defer dest.Close()
+
+			// We generate a random user and password
+			randomBytes := make([]byte, 20)
+			_, err = rand.Read(randomBytes)
+			if err != nil {
+				return nil, nil, err
+			}
+			generatedRPCUser = base64.StdEncoding.EncodeToString(randomBytes)
+
+			_, err = rand.Read(randomBytes)
+			if err != nil {
+				return nil, nil, err
+			}
+			generatedRPCPass = base64.StdEncoding.EncodeToString(randomBytes)
+
+			// We copy every line from the sample config file to the destination,
+			// only replacing the two lines for rpcuser and rpcpass
+			//
+			var line string
+			reader := bufio.NewReader(&bb)
+			for err != io.EOF {
+				line, err = reader.ReadString('\n')
+				if err != nil && err != io.EOF {
+					return nil, nil, err
+				}
+				if !strings.Contains(line, "btcdusername=") && !strings.Contains(line, "btcdpassword=") {
+
+					if strings.Contains(line, "username=") {
+						line = "username=" + generatedRPCUser + "\n"
+					} else if strings.Contains(line, "password=") {
+						line = "password=" + generatedRPCPass + "\n"
+					}
+				}
+				_, _ = generatedRPCPass, generatedRPCUser
+
+				if _, err := dest.WriteString(line); err != nil {
+					return nil, nil, err
+				}
+			}
 		}
 	}
 
@@ -484,8 +570,24 @@ func loadConfig() (*config, []string, error) {
 			return nil, nil, err
 		}
 		if !keystoreExists {
-			err = fmt.Errorf("The wallet does not exist.  Run with the " +
-				"--create option to initialize and create it.")
+			// err = fmt.Errorf("The wallet does not exist.  Run with the " +
+			// "--create option to initialize and create it...")
+			// Ensure the data directory for the network exists.
+			fmt.Println("Existing wallet not found in", cfg.ConfigFile.Value)
+			if err := checkCreateDir(netDir); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return nil, nil, err
+			}
+
+			// Perform the initial wallet creation wizard.
+			if err := createWallet(&cfg); err != nil {
+				fmt.Fprintln(os.Stderr, "Unable to create wallet:", err)
+				return nil, nil, err
+			}
+
+			// Created successfully, so exit now with success.
+			os.Exit(0)
+
 		} else {
 			err = fmt.Errorf("The wallet is in legacy format.  Run with the " +
 				"--create option to import it.")
@@ -532,7 +634,7 @@ func loadConfig() (*config, []string, error) {
 		// 	fmt.Fprintln(os.Stderr, usageMessage)
 		// 	return nil, nil, err
 		// }
-	} else {
+		// } else {
 		// If CAFile is unset, choose either the copy or local btcd cert.
 		if !cfg.CAFile.ExplicitlySet() {
 			cfg.CAFile.Value = filepath.Join(cfg.AppDataDir.Value, defaultCAFilename)
@@ -664,4 +766,103 @@ func loadConfig() (*config, []string, error) {
 	}
 
 	return &cfg, remainingArgs, nil
+}
+
+// createDefaultConfig creates a basic config file at the given destination path.
+// For this it tries to read the config file for the RPC server (either pod or
+// sac), and extract the RPC user and password from it.
+func createDefaultConfigFile(destinationPath, serverConfigPath, serverDataDir, walletDataDir string) error {
+	// fmt.Println("server config path", serverConfigPath)
+	// Read the RPC server config
+	serverConfigFile, err := os.Open(serverConfigPath)
+	if err != nil {
+		return err
+	}
+	defer serverConfigFile.Close()
+	content, err := ioutil.ReadAll(serverConfigFile)
+	if err != nil {
+		return err
+	}
+	// content := []byte(samplePodCtlConf)
+
+	// Extract the rpcuser
+	rpcUserRegexp, err := regexp.Compile(`(?m)^\s*rpcuser=([^\s]+)`)
+	if err != nil {
+		return err
+	}
+	userSubmatches := rpcUserRegexp.FindSubmatch(content)
+	if userSubmatches == nil {
+		// No user found, nothing to do
+		return nil
+	}
+
+	// Extract the rpcpass
+	rpcPassRegexp, err := regexp.Compile(`(?m)^\s*rpcpass=([^\s]+)`)
+	if err != nil {
+		return err
+	}
+	passSubmatches := rpcPassRegexp.FindSubmatch(content)
+	if passSubmatches == nil {
+		// No password found, nothing to do
+		return nil
+	}
+
+	// Extract the TLS
+	TLSRegexp, err := regexp.Compile(`(?m)^\s*tls=(0|1)(?:\s|$)`)
+	if err != nil {
+		return err
+	}
+	TLSSubmatches := TLSRegexp.FindSubmatch(content)
+
+	// Create the destination directory if it does not exists
+	err = os.MkdirAll(filepath.Dir(destinationPath), 0700)
+	if err != nil {
+		return err
+	}
+	// fmt.Println("config path", destinationPath)
+	// Create the destination file and write the rpcuser and rpcpass to it
+	dest, err := os.OpenFile(destinationPath,
+		os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		fmt.Println("ERROR", err)
+		return err
+	}
+	defer dest.Close()
+
+	destString := fmt.Sprintf("username=%s\npassword=%s\n",
+		string(userSubmatches[1]), string(passSubmatches[1]))
+	if TLSSubmatches != nil {
+		fmt.Println("TLS is enabled but more than likely the certificates will fail verification because of the CA. Currently there is no adequate tool for this, but will be soon.")
+		destString += fmt.Sprintf("clienttls=%s\n", TLSSubmatches[1])
+	}
+	output := ";;; Defaults created from local pod/sac configuration:\n" + destString + "\n" + string(sampleModConf)
+	dest.WriteString(output)
+
+	return nil
+}
+
+func copy(src, dst string) (int64, error) {
+	// fmt.Println(src, dst)
+	sourceFileStat, err := os.Stat(src)
+	if err != nil {
+		return 0, err
+	}
+
+	if !sourceFileStat.Mode().IsRegular() {
+		return 0, fmt.Errorf("%s is not a regular file", src)
+	}
+
+	source, err := os.Open(src)
+	if err != nil {
+		return 0, err
+	}
+	defer source.Close()
+
+	destination, err := os.Create(dst)
+	if err != nil {
+		return 0, err
+	}
+	defer destination.Close()
+	nBytes, err := io.Copy(destination, source)
+	return nBytes, err
 }

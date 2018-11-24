@@ -15,19 +15,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/parallelcointeam/pod/btcec"
-	"github.com/parallelcointeam/pod/btcjson"
-	"github.com/parallelcointeam/pod/chaincfg"
-	"github.com/parallelcointeam/pod/chaincfg/chainhash"
-	"github.com/parallelcointeam/pod/rpcclient"
-	"github.com/parallelcointeam/pod/txscript"
-	"github.com/parallelcointeam/pod/wire"
-	"github.com/parallelcointeam/pod/btcutil"
 	"github.com/parallelcointeam/mod/chain"
 	"github.com/parallelcointeam/mod/waddrmgr"
 	"github.com/parallelcointeam/mod/wallet"
 	"github.com/parallelcointeam/mod/wallet/txrules"
 	"github.com/parallelcointeam/mod/wtxmgr"
+	"github.com/parallelcointeam/pod/btcec"
+	"github.com/parallelcointeam/pod/btcjson"
+	"github.com/parallelcointeam/pod/btcutil"
+	"github.com/parallelcointeam/pod/chaincfg"
+	"github.com/parallelcointeam/pod/chaincfg/chainhash"
+	"github.com/parallelcointeam/pod/rpcclient"
+	"github.com/parallelcointeam/pod/txscript"
+	"github.com/parallelcointeam/pod/wire"
 )
 
 // confirmed checks whether a transaction at height txHeight has met minconf
@@ -152,7 +152,7 @@ func unimplemented(interface{}, *wallet.Wallet) (interface{}, error) {
 func unsupported(interface{}, *wallet.Wallet) (interface{}, error) {
 	return nil, &btcjson.RPCError{
 		Code:    -1,
-		Message: "Request unsupported by btcwallet",
+		Message: "Request unsupported by mod",
 	}
 }
 

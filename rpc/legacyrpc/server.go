@@ -19,10 +19,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/parallelcointeam/pod/btcjson"
+	"github.com/btcsuite/websocket"
 	"github.com/parallelcointeam/mod/chain"
 	"github.com/parallelcointeam/mod/wallet"
-	"github.com/btcsuite/websocket"
+	"github.com/parallelcointeam/pod/btcjson"
 )
 
 type websocketClient struct {
@@ -81,7 +81,7 @@ type Server struct {
 
 // jsonAuthFail sends a message back to the client if the http auth is rejected.
 func jsonAuthFail(w http.ResponseWriter) {
-	w.Header().Add("WWW-Authenticate", `Basic realm="btcwallet RPC"`)
+	w.Header().Add("WWW-Authenticate", `Basic realm="mod RPC"`)
 	http.Error(w, "401 Unauthorized.", http.StatusUnauthorized)
 }
 
@@ -462,7 +462,7 @@ out:
 			switch req.Method {
 			case "stop":
 				resp := makeResponse(req.ID,
-					"btcwallet stopping.", nil)
+					"mod stopping.", nil)
 				mresp, err := json.Marshal(resp)
 				// Expected to never fail.
 				if err != nil {
@@ -606,7 +606,7 @@ func (s *Server) postClientRPC(w http.ResponseWriter, r *http.Request) {
 		return
 	case "stop":
 		stop = true
-		res = "btcwallet stopping"
+		res = "mod stopping"
 	default:
 		res, jsonErr = s.handlerClosure(&req)()
 	}

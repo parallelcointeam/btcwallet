@@ -1,4 +1,6 @@
-[Application Options]
+package main
+
+var sampleModConf = []byte(`[Application Options]
 
 ; ------------------------------------------------------------------------------
 ; Bitcoin wallet settings
@@ -11,9 +13,9 @@
 ; simnet=0
 
 ; The directory to open and save wallet, transaction, and unspent transaction
-; output files.  Two directories, `mainnet` and `testnet` are used in this
+; output files.  Two directories, "mainnet" and "testnet" are used in this
 ; directory for mainnet and testnet wallets, respectively.
-; appdata=~/.btcwallet
+; appdata=~/.mod
 
 
 ; ------------------------------------------------------------------------------
@@ -28,10 +30,10 @@
 ; proxypass=
 
 ; The server and port used for btcd websocket connections.
-; rpcconnect=localhost:18334
+; rpcconnect=localhost:21048
 
 ; File containing root certificates to authenticate a TLS connections with btcd
-; cafile=~/.btcwallet/btcd.cert
+; cafile=~/.mod/mod.cert
 
 
 
@@ -39,9 +41,15 @@
 ; RPC server settings
 ; ------------------------------------------------------------------------------
 
+; Enable TLS to full node RPC
+; servertls=1
+
+; Enable TLS for the clients of mod
+; clienttls=1
+
 ; TLS certificate and key file locations
-; rpccert=~/.btcwallet/rpc.cert
-; rpckey=~/.btcwallet/rpc.key
+; rpccert=~/.mod/rpc.cert
+; rpckey=~/.mod/rpc.key
 
 ; Enable one time TLS keys.  This option results in the process generating
 ; a new certificate pair each startup, writing only the certificate file
@@ -110,3 +118,4 @@
 ; be disabled if this option is not specified.  The profile information can be
 ; accessed at http://localhost:<profileport>/debug/pprof once running.
 ; profile=6062
+`)
