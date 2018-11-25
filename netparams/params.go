@@ -1,6 +1,6 @@
 // Copyright (c) 2013-2015 The btcsuite developers
-// Use of this source code is governed by an ISC
-// license that can be found in the LICENSE file.
+
+
 
 package netparams
 
@@ -15,7 +15,7 @@ type Params struct {
 }
 
 // MainNetParams contains parameters specific running btcwallet and
-// btcd on the main network (wire.MainNet).
+// pod on the main network (wire.MainNet).
 var MainNetParams = Params{
 	Params:        &chaincfg.MainNetParams,
 	RPCClientPort: "11048",
@@ -23,7 +23,7 @@ var MainNetParams = Params{
 }
 
 // TestNet3Params contains parameters specific running btcwallet and
-// btcd on the test network (version 3) (wire.TestNet3).
+// pod on the test network (version 3) (wire.TestNet3).
 var TestNet3Params = Params{
 	Params:        &chaincfg.TestNet3Params,
 	RPCClientPort: "21048",

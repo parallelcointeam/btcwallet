@@ -1,6 +1,6 @@
 // Copyright (c) 2013-2015 The btcsuite developers
-// Use of this source code is governed by an ISC
-// license that can be found in the LICENSE file.
+
+
 
 package wallet
 
@@ -40,7 +40,7 @@ func (w *Wallet) handleChainNotifications() {
 		// TODO(aakselrod): There's a race conditon here, which
 		// happens when a reorg occurs between the
 		// rescanProgress notification and the last GetBlockHash
-		// call. The solution when using btcd is to make btcd
+		// call. The solution when using pod is to make pod
 		// send blockconnected notifications with each block
 		// the way Neutrino does, and get rid of the loop. The
 		// other alternative is to check the final hash and,

@@ -5,7 +5,7 @@ btcwallet
 [![Build status](https://ci.appveyor.com/api/projects/status/88nxvckdj8upqr36/branch/master?svg=true)](https://ci.appveyor.com/project/jrick/btcwallet/branch/master)
 
 btcwallet is a daemon handling bitcoin wallet functionality for a
-single user.  It acts as both an RPC client to btcd and an RPC server
+single user.  It acts as both an RPC client to pod and an RPC server
 for wallet clients and legacy RPC applications.
 
 Public and private keys are derived using the hierarchical
@@ -28,10 +28,10 @@ and therefore know your exact balance.  In a future release, public data
 encryption will extend to transactions as well.
 
 btcwallet is not an SPV client and requires connecting to a local or
-remote btcd instance for asynchronous blockchain queries and
-notifications over websockets.  Full btcd installation instructions
+remote pod instance for asynchronous blockchain queries and
+notifications over websockets.  Full pod installation instructions
 can be found [here](https://github.com/parallelcointeam/pod).  An alternative
-SPV mode that is compatible with btcd and Bitcoin Core is planned for
+SPV mode that is compatible with pod and Bitcoin Core is planned for
 a future release.
 
 Wallet clients can use one of two RPC servers:
@@ -139,13 +139,13 @@ go build
 ## Getting Started
 
 The following instructions detail how to get started with btcwallet connecting
-to a localhost btcd.  Commands should be run in `cmd.exe` or PowerShell on
+to a localhost pod.  Commands should be run in `cmd.exe` or PowerShell on
 Windows, or any terminal emulator on *nix.
 
-- Run the following command to start btcd:
+- Run the following command to start pod:
 
 ```
-btcd -u rpcuser -P rpcpass
+pod -u rpcuser -P rpcpass
 ```
 
 - Run the following command to create a wallet:
@@ -161,30 +161,30 @@ btcwallet -u rpcuser -P rpcpass
 ```
 
 If everything appears to be working, it is recommended at this point to
-copy the sample btcd and btcwallet configurations and update with your
+copy the sample pod and btcwallet configurations and update with your
 RPC username and password.
 
 PowerShell (Installed from MSI):
 ```
-PS> cp "$env:ProgramFiles\Btcd Suite\Btcd\sample-btcd.conf" $env:LOCALAPPDATA\Btcd\btcd.conf
-PS> cp "$env:ProgramFiles\Btcd Suite\Btcwallet\sample-btcwallet.conf" $env:LOCALAPPDATA\Btcwallet\btcwallet.conf
-PS> $editor $env:LOCALAPPDATA\Btcd\btcd.conf
+PS> cp "$env:ProgramFiles\Pod Suite\Pod\sample-pod.conf" $env:LOCALAPPDATA\Pod\pod.conf
+PS> cp "$env:ProgramFiles\Pod Suite\Btcwallet\sample-btcwallet.conf" $env:LOCALAPPDATA\Btcwallet\btcwallet.conf
+PS> $editor $env:LOCALAPPDATA\Pod\pod.conf
 PS> $editor $env:LOCALAPPDATA\Btcwallet\btcwallet.conf
 ```
 
 PowerShell (Installed from source):
 ```
-PS> cp $env:GOPATH\src\github.com\btcsuite\btcd\sample-btcd.conf $env:LOCALAPPDATA\Btcd\btcd.conf
+PS> cp $env:GOPATH\src\github.com\btcsuite\pod\sample-pod.conf $env:LOCALAPPDATA\Pod\pod.conf
 PS> cp $env:GOPATH\src\github.com\btcsuite\btcwallet\sample-btcwallet.conf $env:LOCALAPPDATA\Btcwallet\btcwallet.conf
-PS> $editor $env:LOCALAPPDATA\Btcd\btcd.conf
+PS> $editor $env:LOCALAPPDATA\Pod\pod.conf
 PS> $editor $env:LOCALAPPDATA\Btcwallet\btcwallet.conf
 ```
 
 Linux/BSD/POSIX (Installed from source):
 ```bash
-$ cp $GOPATH/src/github.com/parallelcointeam/pod/sample-btcd.conf ~/.btcd/btcd.conf
+$ cp $GOPATH/src/github.com/parallelcointeam/pod/sample-pod.conf ~/.pod/pod.conf
 $ cp $GOPATH/src/github.com/parallelcointeam/mod/sample-btcwallet.conf ~/.btcwallet/btcwallet.conf
-$ $EDITOR ~/.btcd/btcd.conf
+$ $EDITOR ~/.pod/pod.conf
 $ $EDITOR ~/.btcwallet/btcwallet.conf
 ```
 

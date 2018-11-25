@@ -1,6 +1,6 @@
 // Copyright (c) 2013-2017 The btcsuite developers
-// Use of this source code is governed by an ISC
-// license that can be found in the LICENSE file.
+
+
 
 package main
 
@@ -43,7 +43,7 @@ const (
 )
 
 var (
-	btcdDefaultCAFile  = filepath.Join(btcutil.AppDataDir("mod", false), "rpc.cert")
+	podDefaultCAFile  = filepath.Join(btcutil.AppDataDir("mod", false), "rpc.cert")
 	defaultAppDataDir  = btcutil.AppDataDir("mod", false)
 	defaultConfigFile  = filepath.Join(defaultAppDataDir, defaultConfigFilename)
 	defaultRPCKeyFile  = filepath.Join(defaultAppDataDir, "rpc.key")
@@ -69,11 +69,11 @@ type config struct {
 	WalletPass string `long:"walletpass" default-mask:"-" description:"The public wallet password -- Only required if the wallet was created with one"`
 
 	// RPC client options
-	RPCConnect      string                  `short:"c" long:"rpcconnect" description:"Hostname/IP and port of btcd RPC server to connect to (default localhost:11048, testnet: localhost:21048, simnet: localhost:41048)"`
-	CAFile          *cfgutil.ExplicitString `long:"cafile" description:"File containing root certificates to authenticate a TLS connections with btcd"`
+	RPCConnect      string                  `short:"c" long:"rpcconnect" description:"Hostname/IP and port of pod RPC server to connect to (default localhost:11048, testnet: localhost:21048, simnet: localhost:41048)"`
+	CAFile          *cfgutil.ExplicitString `long:"cafile" description:"File containing root certificates to authenticate a TLS connections with pod"`
 	EnableClientTLS bool                    `long:"clienttls" description:"Enable TLS for the RPC client"`
-	BtcdUsername    string                  `long:"btcdusername" description:"Username for btcd authentication"`
-	BtcdPassword    string                  `long:"btcdpassword" default-mask:"-" description:"Password for btcd authentication"`
+	PodUsername     string                  `long:"podusername" description:"Username for pod authentication"`
+	PodPassword     string                  `long:"podpassword" default-mask:"-" description:"Password for pod authentication"`
 	Proxy           string                  `long:"proxy" description:"Connect via SOCKS5 proxy (eg. 127.0.0.1:9050)"`
 	ProxyUser       string                  `long:"proxyuser" description:"Username for proxy server"`
 	ProxyPass       string                  `long:"proxypass" default-mask:"-" description:"Password for proxy server"`
@@ -101,8 +101,8 @@ type config struct {
 	LegacyRPCListeners     []string                `long:"rpclisten" description:"Listen for legacy RPC connections on this interface/port (default port: 11046, testnet: 21046, simnet: 41046)"`
 	LegacyRPCMaxClients    int64                   `long:"rpcmaxclients" description:"Max number of legacy RPC clients for standard connections"`
 	LegacyRPCMaxWebsockets int64                   `long:"rpcmaxwebsockets" description:"Max number of legacy RPC websocket connections"`
-	Username               string                  `short:"u" long:"username" description:"Username for legacy RPC and btcd authentication (if btcdusername is unset)"`
-	Password               string                  `short:"P" long:"password" default-mask:"-" description:"Password for legacy RPC and btcd authentication (if btcdpassword is unset)"`
+	Username               string                  `short:"u" long:"username" description:"Username for legacy RPC and pod authentication (if podusername is unset)"`
+	Password               string                  `short:"P" long:"password" default-mask:"-" description:"Password for legacy RPC and pod authentication (if podpassword is unset)"`
 
 	// EXPERIMENTAL RPC server options
 	//
@@ -422,7 +422,7 @@ func loadConfig() (*config, []string, error) {
 				if err != nil && err != io.EOF {
 					return nil, nil, err
 				}
-				if !strings.Contains(line, "btcdusername=") && !strings.Contains(line, "btcdpassword=") {
+				if !strings.Contains(line, "podusername=") && !strings.Contains(line, "podpassword=") {
 
 					if strings.Contains(line, "username=") {
 						line = "username=" + generatedRPCUser + "\n"
@@ -635,12 +635,12 @@ func loadConfig() (*config, []string, error) {
 		// 	return nil, nil, err
 		// }
 		// } else {
-		// If CAFile is unset, choose either the copy or local btcd cert.
+		// If CAFile is unset, choose either the copy or local pod cert.
 		if !cfg.CAFile.ExplicitlySet() {
 			cfg.CAFile.Value = filepath.Join(cfg.AppDataDir.Value, defaultCAFilename)
 
 			// If the CA copy does not exist, check if we're connecting to
-			// a local btcd and switch to its RPC cert if it exists.
+			// a local pod and switch to its RPC cert if it exists.
 			certExists, err := cfgutil.FileExists(cfg.CAFile.Value)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
@@ -648,14 +648,14 @@ func loadConfig() (*config, []string, error) {
 			}
 			if !certExists {
 				// if _, ok := localhostListeners[RPCHost]; ok {
-				btcdCertExists, err := cfgutil.FileExists(
-					btcdDefaultCAFile)
+				podCertExists, err := cfgutil.FileExists(
+					podDefaultCAFile)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 					return nil, nil, err
 				}
-				if btcdCertExists {
-					cfg.CAFile.Value = btcdDefaultCAFile
+				if podCertExists {
+					cfg.CAFile.Value = podDefaultCAFile
 				}
 				// }
 			}
@@ -747,15 +747,15 @@ func loadConfig() (*config, []string, error) {
 	cfg.RPCCert.Value = cleanAndExpandPath(cfg.RPCCert.Value)
 	cfg.RPCKey.Value = cleanAndExpandPath(cfg.RPCKey.Value)
 
-	// If the btcd username or password are unset, use the same auth as for
-	// the client.  The two settings were previously shared for btcd and
+	// If the pod username or password are unset, use the same auth as for
+	// the client.  The two settings were previously shared for pod and
 	// client auth, so this avoids breaking backwards compatibility while
-	// allowing users to use different auth settings for btcd and wallet.
-	if cfg.BtcdUsername == "" {
-		cfg.BtcdUsername = cfg.Username
+	// allowing users to use different auth settings for pod and wallet.
+	if cfg.PodUsername == "" {
+		cfg.PodUsername = cfg.Username
 	}
-	if cfg.BtcdPassword == "" {
-		cfg.BtcdPassword = cfg.Password
+	if cfg.PodPassword == "" {
+		cfg.PodPassword = cfg.Password
 	}
 
 	// Warn about missing config file after the final command line parse

@@ -1,6 +1,6 @@
-// Copyright (c) 2013-2016 The btcsuite developers
-// Use of this source code is governed by an ISC
-// license that can be found in the LICENSE file.
+
+
+
 
 package chain
 
@@ -89,7 +89,7 @@ func NewRPCClient(chainParams *chaincfg.Params, connect, user, pass string, cert
 
 // BackEnd returns the name of the driver.
 func (c *RPCClient) BackEnd() string {
-	return "btcd"
+	return "pod"
 }
 
 // Start attempts to establish a client connection with the remote server.

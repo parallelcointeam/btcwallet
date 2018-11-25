@@ -15,13 +15,13 @@ import (
 func BackEnds() []string {
 	return []string{
 		"bitcoind",
-		"btcd",
+		"pod",
 		"neutrino",
 	}
 }
 
 // Interface allows more than one backing blockchain source, such as a
-// btcd RPC chain server, or an SPV library, as long as we write a driver for
+// pod RPC chain server, or an SPV library, as long as we write a driver for
 // it.
 type Interface interface {
 	Start() error

@@ -29,10 +29,10 @@ var sampleModConf = []byte(`[Application Options]
 ; proxyuser=
 ; proxypass=
 
-; The server and port used for btcd websocket connections.
+; The server and port used for pod websocket connections.
 ; rpcconnect=localhost:21048
 
-; File containing root certificates to authenticate a TLS connections with btcd
+; File containing root certificates to authenticate a TLS connections with pod
 ; cafile=~/.mod/mod.cert
 
 
@@ -94,16 +94,16 @@ var sampleModConf = []byte(`[Application Options]
 ; RPC settings (both client and server)
 ; ------------------------------------------------------------------------------
 
-; Username and password to authenticate to btcd a RPC server and authenticate
+; Username and password to authenticate to pod a RPC server and authenticate
 ; new client connections
 ; username=
 ; password=
 
-; Alternative username and password for btcd.  If set, these will be used
+; Alternative username and password for pod.  If set, these will be used
 ; instead of the username and password set above for authentication to a
-; btcd RPC server.
-; btcdusername=
-; btcdpassword=
+; pod RPC server.
+; podusername=
+; podpassword=
 
 
 ; ------------------------------------------------------------------------------
