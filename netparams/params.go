@@ -1,7 +1,3 @@
-// Copyright (c) 2013-2015 The btcsuite developers
-
-
-
 package netparams
 
 import "github.com/parallelcointeam/pod/chaincfg"

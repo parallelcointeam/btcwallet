@@ -1,18 +1,14 @@
-// Copyright (c) 2013-2015 The btcsuite developers
-
-
-
 package wallet
 
 import (
 	"bytes"
 	"strings"
 
-	"github.com/parallelcointeam/pod/txscript"
 	"github.com/parallelcointeam/mod/chain"
 	"github.com/parallelcointeam/mod/waddrmgr"
 	"github.com/parallelcointeam/mod/walletdb"
 	"github.com/parallelcointeam/mod/wtxmgr"
+	"github.com/parallelcointeam/pod/txscript"
 )
 
 func (w *Wallet) handleChainNotifications() {

@@ -1,7 +1,3 @@
-// Copyright (c) 2013-2015 The btcsuite developers
-
-
-
 package wtxmgr
 
 import "github.com/parallelcointeam/pod/btclog"

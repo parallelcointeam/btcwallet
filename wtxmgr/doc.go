@@ -1,7 +1,3 @@
-// Copyright (c) 2013-2015 The btcsuite developers
-
-
-
 // Package wtxmgr provides an implementation of a transaction database handling
 // spend tracking for a bitcoin wallet.  Its primary purpose is to save
 // transactions with outputs spendable with wallet keys and transactions that
