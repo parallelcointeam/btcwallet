@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/parallelcointeam/pod/btcjson"
 	"github.com/parallelcointeam/pod/rpcclient"
 )
 
 type BlockChainData struct {
-	GetInfo map[string]interface{} `json:"getinfo"`
+	GetInfo *btcjson.InfoWalletResult `json:"getinfo"`
 }
 
 func (k *BlockChainData) GetBlockChainData() {
@@ -32,8 +33,8 @@ func (k *BlockChainData) GetBlockChainData() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Daaaaaaaa", info)
-
+	// fmt.Println("Daaaaaaaa", info.Blocks)
+	k.GetInfo = info
 	// result := []byte(info.Result())
 	// json.Unmarshal(bytes(info), &k.GetInfo)
 	fmt.Println("fdffffff", k.GetInfo)

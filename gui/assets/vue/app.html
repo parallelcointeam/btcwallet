@@ -20,12 +20,12 @@
                     <button @click="swapComponent(HistoryC)"><div class="mit"><div v-html="vdt.data.icons.history"></div><small>History</small></div></button>
                 </nav>
             </aside>
-                      <main :is="component" id="content" :vicons="vdt.data.icons" class="scr vpage"></main>
+                      <main :is="component" id="content" :vicons="vdt.data.icons" :vpages="vdt.data.pages" class="scr vpage"></main>
 
         </section>
         <footer id="footer" class="cnt fooa">
-            <button @click="swapComponent(PeersC)" class="flc cpt" title="Peers" v-html="vdt.data.icons.peers"></button><span> bcd.data.getinfo.connections </span>
-            <button @click="swapComponent(BlocksC)" class="flc cpt" title="Blocks" v-html="vdt.data.icons.blocks"></button><span> bcd.data.getinfo.blocks </span>
+            <button @click="swapComponent(PeersC)" class="flc cpt" title="Peers" v-html="vdt.data.icons.peers"></button><span v-html="bcd.data.getinfo.connections"></span>
+            <button @click="swapComponent(BlocksC)" class="flc cpt" title="Blocks" v-html="vdt.data.icons.blocks"></button><span v-html="bcd.data.getinfo.blocks"></span>
             <button @click="swapComponent(AboutC)" class="flc cpt" title="About" v-html="vdt.data.icons.about"></button>  
             <button @click="swapComponent(HelpC)" class="flc cpt" title="Help" v-html="vdt.data.icons.help"></button>  
             <button @click="swapComponent(SettingsC)" class="flc cpt" title="Settings" v-html="vdt.data.icons.settings"></button>  

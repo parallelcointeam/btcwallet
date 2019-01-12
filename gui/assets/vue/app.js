@@ -19,7 +19,7 @@ components: {
 },
 created: function() {
   // this.ref();
-  this.timer = setInterval(this.ref, 1000)
+  // this.timer = setInterval(this.ref, 5000)
 },
 methods: {
   swapComponent: function(component){this.component = component;},

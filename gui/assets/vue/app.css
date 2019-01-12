@@ -28,8 +28,15 @@ display: flex;
 .fii{
 flex: 1;
 }
+.frw{
+flex-direction: row;
+}
 .fcl{
 flex-direction: column;
+}
+.scnt{
+justify-content: space-between;
+align-items: center;
 }
 .cnt{
 justify-content: center;
@@ -145,7 +152,7 @@ filter: blur(8px) opacity(.62);
   }
 
   h2 {
-    font-size: 1.6em;
+    font-size: 1.16em;
   }
 
   .bold {

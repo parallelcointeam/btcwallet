@@ -1,12 +1,12 @@
 package jdb
 
-type VSettings struct {
-	InfSet InfSet `json:"inf"`
-	NetSet NetSet `json:"net"`
-	SecSet SecSet `json:"sec"`
-	Mining Mining `json:"mining"`
-}
-type InfSet struct {
+// type VSettings struct {
+// 	InfSet InfSet `json:"inf"`
+// 	NetSet NetSet `json:"net"`
+// 	SecSet SecSet `json:"sec"`
+// 	Mining Mining `json:"mining"`
+// }
+type InfConf struct {
 	Lang  string `json:"lang"`
 	Deno  string `json:"deno"`
 	Fiat  string `json:"fiat"`
@@ -16,7 +16,7 @@ type InfSet struct {
 	Tray  bool   `json:"tray"`
 }
 
-type NetSet struct {
+type NetConf struct {
 	TLS     bool   `json:"tls"`
 	Network string `json:"network"`
 	RPC     string `json:"rpc"`
@@ -26,11 +26,11 @@ type NetSet struct {
 	Proxy   string `json:"rpc"`
 }
 
-type SecSet struct {
+type SecConf struct {
 	Network string `json:"network"`
 }
 
-type Mining struct {
+type MiningConf struct {
 	Algo  string `json:"algo"`
 	CPU   string `json:"cpu"`
 	Cores uint   `json:"cores"`
@@ -38,6 +38,6 @@ type Mining struct {
 
 // var appHtml, _ = ioutil.ReadFile("./assets/vue/app.html")
 
-var VST VSettings = VSettings{
-	// "apphtml": appHtml,
-}
+// var VST VSettings = VSettings{
+// 	// "apphtml": appHtml,
+// }
