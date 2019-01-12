@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/parallelcointeam/mod/chain"
+	"github.com/parallelcointeam/mod/gui"
 	"github.com/parallelcointeam/mod/rpc/legacyrpc"
 	"github.com/parallelcointeam/mod/wallet"
 )
@@ -124,7 +125,7 @@ func walletMain() error {
 		}()
 	}
 	if cfg.GUI {
-		go GUI()
+		go gui.GUI()
 	}
 	<-interruptHandlersDone
 	log.Info("Shutdown complete")

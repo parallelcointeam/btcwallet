@@ -1,9 +1,9 @@
-package main
+package gui
 
 import (
 	"net/url"
 
-	"github.com/parallelcointeam/mod/jdb"
+	"github.com/parallelcointeam/mod/gui/jdb"
 	"github.com/zserge/webview"
 )
 
@@ -28,14 +28,14 @@ func GUI() {
 	})
 	defer w.Exit()
 	w.Dispatch(func() {
-		// w.Bind("getinfo", []interface{}{(*btcjson.InfoWalletResult)(nil)})
+		// w.Bind("blockchaindata", []interface{}{(*btcjson.InfoWalletResult)(nil)})
 		//w.Bind("icons", &icons)
 		w.Bind("vuedata", &VDATA{
 			Pages: jdb.VPG,
 			Icons: jdb.VIC,
 			Imgs:  jdb.VIM,
 		})
-		// fmt.Println("daadddddddddddddddddddddddddddaaaaa", jdb.IcoLogo)
+		// fmt.Println("daadddddddddddddddddddddddddddaaaaa",
 
 		w.InjectCSS(string(jdb.VLB["buefycss"]))
 		w.InjectCSS(string(jdb.VLB["appcss"]))

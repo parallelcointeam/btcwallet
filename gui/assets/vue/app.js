@@ -18,12 +18,12 @@ components: {
   // SendC,
 },
 created: function() {
-  this.ref();
+  // this.ref();
   this.timer = setInterval(this.ref, 1000)
 },
 methods: {
   swapComponent: function(component){this.component = component;},
-  ref: function() { blockchaindata.getBlockChainData(); },
+  // ref: function() { blockchaindata.getBlockChainData(); },
   cancelAutoUpdate: function() { clearInterval(this.timer) }
 },
 beforeDestroy() {
