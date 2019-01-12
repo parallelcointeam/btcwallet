@@ -1,7 +1,5 @@
 // Copyright (c) 2013-2017 The btcsuite developers
 
-
-
 package main
 
 import (
@@ -43,7 +41,7 @@ const (
 )
 
 var (
-	podDefaultCAFile  = filepath.Join(btcutil.AppDataDir("mod", false), "rpc.cert")
+	podDefaultCAFile   = filepath.Join(btcutil.AppDataDir("mod", false), "rpc.cert")
 	defaultAppDataDir  = btcutil.AppDataDir("mod", false)
 	defaultConfigFile  = filepath.Join(defaultAppDataDir, defaultConfigFilename)
 	defaultRPCKeyFile  = filepath.Join(defaultAppDataDir, "rpc.key")
@@ -64,7 +62,7 @@ type config struct {
 	DebugLevel    string                  `short:"d" long:"debuglevel" description:"Logging level {trace, debug, info, warn, error, critical}"`
 	LogDir        string                  `long:"logdir" description:"Directory to log output."`
 	Profile       string                  `long:"profile" description:"Enable HTTP profiling on given port -- NOTE port must be between 1024 and 65536"`
-
+	GUI           bool                    `long:"gui" description:"Launch GUI"`
 	// Wallet options
 	WalletPass string `long:"walletpass" default-mask:"-" description:"The public wallet password -- Only required if the wallet was created with one"`
 

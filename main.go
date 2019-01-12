@@ -123,7 +123,9 @@ func walletMain() error {
 			simulateInterrupt()
 		}()
 	}
-
+	if cfg.GUI {
+		go GUI()
+	}
 	<-interruptHandlersDone
 	log.Info("Shutdown complete")
 	return nil
