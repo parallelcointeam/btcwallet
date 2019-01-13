@@ -5,7 +5,7 @@ var app = new Vue({
   data () {
     return {
     vdt: vuedata,
-    // bcd: blockchaindata,
+    bcd: blockchaindata,
     // vpage: vdt.data.pages.home,
     timer: '',
     // component: Home,
@@ -18,12 +18,12 @@ components: {
   // SendC,
 },
 created: function() {
-  // this.ref();
+  this.ref();
   // this.timer = setInterval(this.ref, 5000)
 },
 methods: {
   swapComponent: function(component){this.component = component;},
-  // ref: function() { blockchaindata.getBlockChainData(); },
+  ref: function() { blockchaindata.getBlockChainData(); },
   cancelAutoUpdate: function() { clearInterval(this.timer) }
 },
 beforeDestroy() {
