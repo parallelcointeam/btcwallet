@@ -127,7 +127,6 @@ var rpcHandlersBeforeInit = map[string]commandHandler{
 	"getrawmempool":         handleGetRawMempool,
 	"getrawtransaction":     handleGetRawTransaction,
 	"gettxout":              handleGetTxOut,
-	"getwork":               handleGetWork,
 	"help":                  handleHelp,
 	"node":                  handleNode,
 	"ping":                  handlePing,
@@ -244,6 +243,14 @@ var rpcLimited = map[string]struct{}{
 	"verifymessage":         {},
 	"version":               {},
 }
+
+var (
+	RPCHandlers           = rpcHandlers
+	RPCHandlersBeforeInit = rpcHandlersBeforeInit
+	RPCAskWallet          = rpcAskWallet
+	RPCUnimplemented      = rpcUnimplemented
+	RPCLimited            = rpcLimited
+)
 
 // builderScript is a convenience function which is used for hard-coded scripts built with the script builder. Any errors are converted to a panic since it is only, and must only, be used with hard-coded, and therefore, known good, scripts.
 func builderScript(builder *txscript.ScriptBuilder) []byte {

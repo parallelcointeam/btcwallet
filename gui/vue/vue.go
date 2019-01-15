@@ -1,0 +1,179 @@
+package vue
+
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/google/martian/log"
+
+	"github.com/parallelcointeam/mod/chain"
+	"github.com/parallelcointeam/mod/waddrmgr"
+	"github.com/parallelcointeam/mod/wallet"
+	"github.com/parallelcointeam/mod/wallet/txrules"
+	"github.com/parallelcointeam/pod/btcjson"
+	"github.com/parallelcointeam/pod/btcutil"
+	"github.com/parallelcointeam/pod/chaincfg"
+	"github.com/parallelcointeam/pod/txscript"
+	"github.com/parallelcointeam/pod/wire"
+	// "github.com/parallelcointeam/pod/rpcclient"
+)
+
+var WLT *wallet.Wallet
+
+type RPCHandlers struct {
+	PCHandlers interface{} `json:"getinfo"`
+}
+type BlockChain struct {
+	GetInfo                 *btcjson.InfoWalletResult        `json:"getinfo"`
+	ListTransactions        []btcjson.ListTransactionsResult `json:"listtransactions"`
+	ListAllTransactions     []btcjson.ListTransactionsResult `json:"listalltransactions"`
+	ListAllSendTransactions []btcjson.ListTransactionsResult `json:"listallsendtransactions"`
+	Balance                 float64                          `json:"balance"`
+	UnConfirmed             float64                          `json:"unconfirmed"`
+	// GetInfo interface{} `json:"getinfo"`
+}
+type SendToAddress struct {
+	Address string  `json:"address"`
+	Label   string  `json:"label"`
+	Amount  float64 `json:"amount"`
+}
+
+func (k *BlockChain) GetInfoData() {
+	// Get Info
+	getinfo, err := WLT.ChainClient().(*chain.RPCClient).GetInfo()
+	if err != nil {
+	}
+	bal, err := WLT.CalculateBalance(1)
+	if err != nil {
+	}
+	getinfo.WalletVersion = int32(waddrmgr.LatestMgrVersion)
+	getinfo.Balance = bal.ToDUO()
+	getinfo.PaytxFee = float64(txrules.DefaultRelayFeePerKb)
+	k.GetInfo = getinfo
+
+	// List Transactions
+
+	k.ListTransactions, _ = WLT.ListTransactions(0, 10)
+
+	// List All Transactions
+
+	k.ListAllTransactions, _ = WLT.ListAllTransactions()
+
+	// List Send Transactions
+	var listallsendtransactions []btcjson.ListTransactionsResult
+	for _, sent := range k.ListAllTransactions {
+		if sent.Category == "send" {
+			listallsendtransactions = append(listallsendtransactions, sent)
+		}
+	}
+	k.ListAllSendTransactions = listallsendtransactions
+
+	// Balance
+	var balance btcutil.Amount
+	accountName := "*"
+	if accountName == "*" {
+		balance, err = WLT.CalculateBalance(1)
+		if err != nil {
+		}
+	}
+	k.Balance = balance.ToDUO()
+
+	// UnConfirmed
+	acctName := "default"
+	account, err := WLT.AccountNumber(waddrmgr.KeyScopeBIP0044, acctName)
+	if err != nil {
+	}
+	bals, err := WLT.CalculateAccountBalances(account, 1)
+	if err != nil {
+	}
+	unconfirmed := (bals.Total - bals.Spendable).ToDUO()
+
+	k.UnConfirmed = unconfirmed
+
+	// t, err := follower.New("/home/marcetin/.mod/logs/testnet/mod.log", follower.Config{
+	// 	Whence: io.SeekEnd,
+	// 	Offset: 0,
+	// 	Reopen: true,
+	// })
+
+	// for line := range t.Lines() {
+	// 	fmt.Println("ddddddddddddd", line)
+	// }
+	blk := WLT.Manager.SyncedTo()
+
+	// block := chain.GetBlock(blk.Hash.String())
+	fmt.Println("GetInfoGetInfoGetInfoGetInfoGetInfoGetInfoGetInfoGetInfoGetInfoGetInfoGetInfo", k.GetInfo)
+	// fmt.Println("listtransactionslisttransactionslisttransactionslisttransactionslisttransactions", k.ListTransactions)
+	fmt.Println("tttttttttttttttttttttttttttttt", blk.Hash.String())
+	fmt.Println("BalanceBalanceBalanceBalanceBalance", k.Balance)
+
+}
+func (k *SendToAddress) SendDUO(vaddress string, vlabel string, vamount interface{}) {
+	amount, err := strconv.ParseFloat(vamount.(string), 64)
+	if err != nil {
+	}
+	amt, err := btcutil.NewAmount(amount)
+	if err != nil {
+	}
+
+	pairs := map[string]btcutil.Amount{
+		vaddress: amt,
+	}
+
+	sendPairs(WLT, pairs, waddrmgr.DefaultAccountNum, 1, txrules.DefaultRelayFeePerKb)
+
+	fmt.Println("----------- address::", vaddress)
+	fmt.Println("----------- label::::", vlabel)
+	fmt.Println("----------- amount:::", vamount)
+
+	// fmt.Println("----------- amount:::", &legacyrpc.RPCHandlers)
+
+}
+
+func makeOutputs(pairs map[string]btcutil.Amount, chainParams *chaincfg.Params) ([]*wire.TxOut, error) {
+	outputs := make([]*wire.TxOut, 0, len(pairs))
+	for addrStr, amt := range pairs {
+		addr, err := btcutil.DecodeAddress(addrStr, chainParams)
+		if err != nil {
+			return nil, fmt.Errorf("cannot decode address: %s", err)
+		}
+
+		pkScript, err := txscript.PayToAddrScript(addr)
+		if err != nil {
+			return nil, fmt.Errorf("cannot create txout script: %s", err)
+		}
+
+		outputs = append(outputs, wire.NewTxOut(int64(amt), pkScript))
+	}
+	return outputs, nil
+}
+func sendPairs(w *wallet.Wallet, amounts map[string]btcutil.Amount,
+	account uint32, minconf int32, feeSatPerKb btcutil.Amount) (string, error) {
+
+	outputs, err := makeOutputs(amounts, w.ChainParams())
+	if err != nil {
+		return "", err
+	}
+	txHash, err := w.SendOutputs(outputs, account, minconf, feeSatPerKb)
+	if err != nil {
+		if err == txrules.ErrAmountNegative {
+			// return "", ErrNeedPositiveAmount
+		}
+		if waddrmgr.IsError(err, waddrmgr.ErrLocked) {
+			// return "", &ErrWalletUnlockNeeded
+		}
+		switch err.(type) {
+		case btcjson.RPCError:
+			return "", err
+		}
+
+		return "", &btcjson.RPCError{
+			Code:    btcjson.ErrRPCInternal.Code,
+			Message: err.Error(),
+		}
+	}
+
+	txHashStr := txHash.String()
+	log.Infof("Successfully sent transaction %v", txHashStr)
+	return txHashStr, nil
+}

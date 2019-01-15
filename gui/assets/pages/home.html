@@ -1,39 +1,43 @@
-<div class="flx fcl fii" v-bar>
-
-      <div class="flx frw fii pdb">
-        <div class="flx fcl fii mrl pnlbg">
-             <div class="flx fii pdd wst">
+<div class="flx fcl fii">
+      <div class="flx frw fii">
+        <div class="flx fcl bxs">
+           <h2><span v-html="vlng.balances"></span></h2>
+             <div class="flx fii pdd">
   <ul class="fii stg">
-          <li class="flx frw scnt htg"><div v-html="vicons.balance"></div><h2>Balance: </h2><strong> 555556.5656 DUO</strong></li>
-           <li class="flx frw scnt htg"><div v-html="vicons.unconfirmed"></div><h2>Unconfirmed: </h2><strong> 26.rovija656 DUO</strong></li>
-           <li class="flx frw scnt htg"><div v-html="vicons.txnumber"></div><h2>Number of transaction: </h2> <strong>5</strong></li>
+          <li class="flx frw scnt htg"><div v-html="vicons.balance"></div><h4 v-html="vlng.total"></h4><strong><span v-html="vbcd.getinfo.balance" class="duo"></span></strong></li>
+           <li class="flx frw scnt htg"><div v-html="vicons.unconfirmed"></div><h4 v-html="vlng.unconfirmed"></h4><strong><span v-html="vbcd.unconfirmed" class="duo"></span></strong></li>
+           <li class="flx frw scnt htg"><div v-html="vicons.txnumber"></div><h4 v-html="vlng.available"></h4><strong><span v-html="vbcd.unconfirmed" class="duo"></span></strong></li>
   </ul>
                   </div>
   </div>
   
   
-        <div class="flx fcl fii lts">
+        <div class="flx fcl fii bxs">
        
-           <h2 class="pds">Latest Transactions</h2>
-  
-          <div class="flx fii" v-bar>
-            <ul class="mrr">
-    <li class="htg">
-    <div class="flx fii frw pnlbg move">
-    <div class="flx left-side">
-    <div v-html="vicons.received"></div>
-    <div v-html="vicons.sent"></div>
-    </div>
-    <div class="flx frw fii right-side">
-        <div class="date"><p>datum 21.212.22</p></div>
-      <div class="bottom">walletAlkajhsdklhjalkjhsd</div>
-      <div class="amount">15.215<span class="bolder"> DUO</span></div>
-    </div>
-  </div>
-   </li>
+           <h2 v-html="vlng.latesttransactions"></h2>
+               <section id="home_transactions" class="flx fii" v-bar>
+          <b-table
+            :data="transactions"
+            :default-sort-direction="defaultSortDirection"
+            default-sort="time">
 
-            </ul>
+            <template slot-scope="props">
+               
+<b-table-column field="category" :label=vlng.type width="32" sortable>
+    <span v-if="props.row.category === 'send'" v-html="vicons.sent"></span>
+    <span v-if="props.row.category === 'receive'" v-html="vicons.received"></span>
+    <span v-if="props.row.category === 'immature'" v-html="vicons.unconfirmed"></span>
+</b-table-column>
+
+    <b-table-column field="time" :label=vlng.date sortable numeric><small>{{ new Date(props.row.time).toLocaleDateString() }}{{ new Date(props.row.time).toLocaleTimeString() }}</small></b-table-column>
+                <b-table-column field="address" :label=vlng.address sortable><span v-html="props.row.address" class="tag"></span></b-table-column>
+                <b-table-column field="amount" :label=vlng.amount sortable numeric>
+                    <span v-html="props.row.amount" class="duo"></span>
+                </b-table-column>
+
+        </b-table>
+    </section>
+
   
   
-    </div>
     </div>  </div>  </div>

@@ -125,7 +125,12 @@ func walletMain() error {
 		}()
 	}
 	if cfg.GUI {
-		go gui.GUI()
+		wlt, err := loader.LoadedWallet()
+		if err != true {
+			panic("")
+		}
+		go gui.GUI(wlt)
+
 	}
 	<-interruptHandlersDone
 	log.Info("Shutdown complete")

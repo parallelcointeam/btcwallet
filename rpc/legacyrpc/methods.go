@@ -1,8 +1,6 @@
 // Copyright (c) 2013-2017 The btcsuite developers
 // Copyright (c) 2016 The Decred developers
 
-
-
 package legacyrpc
 
 import (
@@ -61,6 +59,8 @@ type requestHandlerChainRequired func(interface{}, *wallet.Wallet, *chain.RPCCli
 var rpcHandlers = map[string]struct {
 	handler          requestHandler
 	handlerWithChain requestHandlerChainRequired
+	Handler          requestHandler
+	HandlerWithChain requestHandlerChainRequired
 
 	// Function variables cannot be compared against anything but nil, so
 	// use a boolean to record whether help generation is necessary.  This
@@ -73,43 +73,43 @@ var rpcHandlers = map[string]struct {
 	noHelp bool
 }{
 	// Reference implementation wallet methods (implemented)
-	"addmultisigaddress":     {handler: addMultiSigAddress},
-	"createmultisig":         {handler: createMultiSig},
-	"dumpprivkey":            {handler: dumpPrivKey},
-	"getaccount":             {handler: getAccount},
-	"getaccountaddress":      {handler: getAccountAddress},
-	"getaddressesbyaccount":  {handler: getAddressesByAccount},
-	"getbalance":             {handler: getBalance},
-	"getbestblockhash":       {handler: getBestBlockHash},
-	"getblockcount":          {handler: getBlockCount},
-	"getinfo":                {handlerWithChain: getInfo},
-	"getnewaddress":          {handler: getNewAddress},
-	"getrawchangeaddress":    {handler: getRawChangeAddress},
-	"getreceivedbyaccount":   {handler: getReceivedByAccount},
-	"getreceivedbyaddress":   {handler: getReceivedByAddress},
-	"gettransaction":         {handler: getTransaction},
-	"help":                   {handler: helpNoChainRPC, handlerWithChain: helpWithChainRPC},
-	"importprivkey":          {handler: importPrivKey},
-	"keypoolrefill":          {handler: keypoolRefill},
-	"listaccounts":           {handler: listAccounts},
-	"listlockunspent":        {handler: listLockUnspent},
-	"listreceivedbyaccount":  {handler: listReceivedByAccount},
-	"listreceivedbyaddress":  {handler: listReceivedByAddress},
-	"listsinceblock":         {handlerWithChain: listSinceBlock},
-	"listtransactions":       {handler: listTransactions},
-	"listunspent":            {handler: listUnspent},
-	"lockunspent":            {handler: lockUnspent},
-	"sendfrom":               {handlerWithChain: sendFrom},
-	"sendmany":               {handler: sendMany},
-	"sendtoaddress":          {handler: sendToAddress},
-	"settxfee":               {handler: setTxFee},
-	"signmessage":            {handler: signMessage},
-	"signrawtransaction":     {handlerWithChain: signRawTransaction},
-	"validateaddress":        {handler: validateAddress},
-	"verifymessage":          {handler: verifyMessage},
-	"walletlock":             {handler: walletLock},
-	"walletpassphrase":       {handler: walletPassphrase},
-	"walletpassphrasechange": {handler: walletPassphraseChange},
+	"addmultisigaddress":     {Handler: addMultiSigAddress, handler: addMultiSigAddress},
+	"createmultisig":         {Handler: createMultiSig, handler: createMultiSig},
+	"dumpprivkey":            {Handler: dumpPrivKey, handler: dumpPrivKey},
+	"getaccount":             {Handler: getAccount, handler: getAccount},
+	"getaccountaddress":      {Handler: getAccountAddress, handler: getAccountAddress},
+	"getaddressesbyaccount":  {Handler: getAddressesByAccount, handler: getAddressesByAccount},
+	"getbalance":             {Handler: getBalance, handler: getBalance},
+	"getbestblockhash":       {Handler: getBestBlockHash, handler: getBestBlockHash},
+	"getblockcount":          {Handler: getBlockCount, handler: getBlockCount},
+	"getinfo":                {HandlerWithChain: getInfo, handlerWithChain: getInfo},
+	"getnewaddress":          {Handler: getNewAddress, handler: getNewAddress},
+	"getrawchangeaddress":    {Handler: getRawChangeAddress, handler: getRawChangeAddress},
+	"getreceivedbyaccount":   {Handler: getReceivedByAccount, handler: getReceivedByAccount},
+	"getreceivedbyaddress":   {Handler: getReceivedByAddress, handler: getReceivedByAddress},
+	"gettransaction":         {Handler: getTransaction, handler: getTransaction},
+	"help":                   {Handler: helpNoChainRPC, handler: helpNoChainRPC, handlerWithChain: helpWithChainRPC},
+	"importprivkey":          {Handler: importPrivKey, handler: importPrivKey},
+	"keypoolrefill":          {Handler: keypoolRefill, handler: keypoolRefill},
+	"listaccounts":           {Handler: listAccounts, handler: listAccounts},
+	"listlockunspent":        {Handler: listLockUnspent, handler: listLockUnspent},
+	"listreceivedbyaccount":  {Handler: listReceivedByAccount, handler: listReceivedByAccount},
+	"listreceivedbyaddress":  {Handler: listReceivedByAddress, handler: listReceivedByAddress},
+	"listsinceblock":         {HandlerWithChain: listSinceBlock, handlerWithChain: listSinceBlock},
+	"listtransactions":       {Handler: listTransactions, handler: listTransactions},
+	"listunspent":            {Handler: listUnspent, handler: listUnspent},
+	"lockunspent":            {Handler: lockUnspent, handler: lockUnspent},
+	"sendfrom":               {HandlerWithChain: sendFrom, handlerWithChain: sendFrom},
+	"sendmany":               {Handler: sendMany, handler: sendMany},
+	"sendtoaddress":          {Handler: sendToAddress, handler: sendToAddress},
+	"settxfee":               {Handler: setTxFee, handler: setTxFee},
+	"signmessage":            {Handler: signMessage, handler: signMessage},
+	"signrawtransaction":     {HandlerWithChain: signRawTransaction, handlerWithChain: signRawTransaction},
+	"validateaddress":        {Handler: validateAddress, handler: validateAddress},
+	"verifymessage":          {Handler: verifyMessage, handler: verifyMessage},
+	"walletlock":             {Handler: walletLock, handler: walletLock},
+	"walletpassphrase":       {Handler: walletPassphrase, handler: walletPassphrase},
+	"walletpassphrasechange": {Handler: walletPassphraseChange, handler: walletPassphraseChange},
 
 	// Reference implementation methods (still unimplemented)
 	"backupwallet":         {handler: unimplemented, noHelp: true},
@@ -137,6 +137,8 @@ var rpcHandlers = map[string]struct {
 	"renameaccount":           {handler: renameAccount},
 	"walletislocked":          {handler: walletIsLocked},
 }
+
+var RPCHandlers = &rpcHandlers
 
 // unimplemented handles an unimplemented RPC request with the
 // appropiate error.

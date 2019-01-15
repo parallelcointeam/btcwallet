@@ -1,12 +1,68 @@
-<div class="hero-body" style="background: #1e1d1d">
-      <div class="container has-text-centered">
-        <div class="columns">
-          <div class="column is-half is-offset-one-quarter vertical-align">
-            <h1 class="home-intro">
-            ParallelCoin WalletSendSendSendSend
-            </h1>
-            <p class="home-subintro">True SEND</p>
-          </div>
-        </div>
-      </div>
+<div class="flx fcl fii" v-bar>
+
+      <div class="flx fcl fii">
+        <div class="flx fcl fii bxs">
+           <h2>Send</h2>
+
+             <div class="flx fii pdd">
+        <form id="signup-form" @submit="sendForm" class="flx fii">
+ 
+      <ul class="fii stg">
+          <li class="flx frw scnt htg"><div v-html="vicons.balance"></div><h4 v-html="vlng.payto"></h4><b-input type="text" name="address" v-model="address" required placeholder="Enter a ParallelCoin address (e.g. XXXXXXX)" /><button>Address Book</button><button>Paste</button><button>Remove</button></li>
+          <li class="flx frw scnt htg"><div v-html="vicons.balance"></div><h4 v-html="vlng.label"></h4><b-input type="text" name="label" v-model="label" placeholder="Enter a label for the address (e.g. Loki)" /></li>
+          <li class="flx frw scnt htg"><div v-html="vicons.balance"></div><h4 v-html="vlng.amount"></h4><b-input type="number" step="0.000001" name="amount" required v-model="amount" min="0" placeholder="Enter a ParallelCoin amount" /></li>
+          <li class="flx frw scnt htg"><button type="submit" class="button is-danger" v-html="vlng.send"></button></li>
+  </ul>
+
+    </form>
+
+                  </div>
+  </div>
+  
+  
+        <div class="flx fcl fii bxs">
+
+
+           <h2 v-html="vlng.senttransactionshistory"></h2>
+  
+    <section>
+        <b-field grouped group-multiline>
+            <b-select v-model="perPage" :disabled="!isPaginated">
+                <option value="5">5 {{ vlng.perpage}}</option>
+                <option value="10">10 {{ vlng.perpage}}</option>
+                <option value="15">15 {{ vlng.perpage}}</option>
+                <option value="20">20 {{ vlng.perpage}}</option>
+            </b-select>
+            <div class="control is-flex">
+                <b-switch v-model="isPaginated">Paginated</b-switch>
+            </div>
+        </b-field>
+
+        <b-table
+            :data="transactions"
+            :paginated="isPaginated"
+            :per-page="perPage"
+            :current-page.sync="currentPage"
+            :pagination-simple="isPaginationSimple"
+            :default-sort-direction="defaultSortDirection"
+            default-sort="time">
+
+            <template slot-scope="props">
+               <b-table-column field="time" :label=vlng.date sortable centered numeric>
+<span>
+    {{ new Date(props.row.time).toLocaleDateString() }}
+    {{ new Date(props.row.time).toLocaleTimeString() }}
+</span>
+            </b-table-column>
+                <b-table-column field="address" :label=vlng.address sortable>
+                  <span v-html="props.row.address" class="tag"></span>
+                </b-table-column>
+                <b-table-column field="amount" :label=vlng.amount width="180" sortable numeric>
+                    <span v-html="props.row.amount" class="duo"></span>
+                </b-table-column>
+
+        </b-table>
+    </section>
+
     </div>
+    </div>  </div>  </div>
