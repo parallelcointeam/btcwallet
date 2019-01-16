@@ -5,6 +5,7 @@ var SendC = {
     vlng:Object,
 
   },
+  
   data () {
     return {
       address:"",
