@@ -1,5 +1,893 @@
-/*!
-* easy-bar.js v1.0.4
-* (c) 2018-2018 PengYuan-Jiang
-*/
-!function(e,l){"object"==typeof exports&&"undefined"!=typeof module?module.exports=l():"function"==typeof define&&define.amd?define(l):e.EasyBar=l()}(this,function(){"use strict";var o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},t=function(e,l){if(!(e instanceof l))throw new TypeError("Cannot call a class as a function")},e=function(){function r(e,l){for(var o=0;o<l.length;o++){var r=l[o];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(e,l,o){return l&&r(e.prototype,l),o&&r(e,o),e}}(),s=function(){function s(){t(this,s)}return e(s,null,[{key:"hasClass",value:function(e,l){return e.classList?e.classList.contains(l):new RegExp("\\b"+l+"\\b").test(e.className)}},{key:"addClass",value:function(l){for(var e=arguments.length,o=Array(1<e?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];o&&0<o.length&&o.forEach(function(e){e&&(l.classList?l.classList.add(e):s.hasClass(l,e)||(l.className+=" "+e))})}},{key:"removeClass",value:function(l){for(var e=arguments.length,o=Array(1<e?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];o&&0<o.length&&o.forEach(function(e){e&&(l.classList?l.classList.remove(e):l.className=l.className.replace(new RegExp("\\b"+e+"\\b","g"),""))})}},{key:"compatStyle",value:function(e,l,o){var r=l.slice(0,1).toUpperCase()+l.substring(1);e.style["webkit"+r]=o,e.style["moz"+r]=o,e.style["ms"+r]=o,e.style["o"+r]=o,e.style[l]=o}},{key:"style",value:function(e,l,o){e.style[l]!=o&&(e.style[l]=o)}},{key:"debounce",value:function(r,s,t){var a=null;return function(){var e=this,l=arguments;clearTimeout(a);var o=s?s.apply(e,l):void 0;if(o?a=setTimeout(function(){r.apply(e,l)},o):r.apply(e,l),t)return t.apply(e,l)}}},{key:"throttle",value:function(s,t,a){var i,n;return function(){var e=this,l=+new Date,o=arguments,r=t?t.apply(e,o):void 0;if(i&&r&&l<i+r?(clearTimeout(n),n=setTimeout(function(){i=l,s.apply(e,o)},r)):(i=l,s.apply(e,o)),a)return a.apply(e,o)}}}]),s}(),a={resizeRefresh:!0,barfloat:!0,preventParentScroll:!1,scrollBarBehavior:null,scrollThrottle:10,draggerThrottle:10,observerThrottle:200,resizeDebounce:200,scrollingPhantomDelay:1e3,draggingPhantomDelay:1e3,clsBox:"",clsBoxScrolling:"",clsBoxScrollingPhantom:"",clsBoxDragging:"",clsBoxDraggingPhantomClass:"",clsBoxVisibleBarV:"",clsBoxInvisibleBarV:"",clsBoxVisibleBarH:"",clsBoxInvisibleBarH:"",clsBoxClip:"",clsContent:"",clsBarV:"",clsBarH:"",clsTrack:"",clsThumb:""},i={clsBox:"eb",clsBoxScrolling:"eb-scrolling",clsBoxScrollingPhantom:"eb-scrolling-phantom",clsBoxDragging:"eb-dragging",clsBoxDraggingPhantomClass:"eb-dragging-phantom",clsBoxVisibleBarV:"eb-visible-v",clsBoxInvisibleBarV:"eb-invisible-v",clsBoxVisibleBarH:"eb-visible-h",clsBoxInvisibleBarH:"eb-invisible-h",clsBoxClip:"eb-clip",clsContent:"eb-content",clsBarV:"eb-bar-v",clsBarH:"eb-bar-h",clsTrack:"eb-track",clsThumb:"eb-thumb"};!function(e,l){void 0===l&&(l={});var o=l.insertAt;if(e&&"undefined"!=typeof document){var r=document.head||document.getElementsByTagName("head")[0],s=document.createElement("style");s.type="text/css","top"===o&&r.firstChild?r.insertBefore(s,r.firstChild):r.appendChild(s),s.styleSheet?s.styleSheet.cssText=e:s.appendChild(document.createTextNode(e))}}(".hide-native-bar::-webkit-scrollbar{display:none}.hide-native-bar::-o-scrollbar{display:none}.hide-native-bar{-ms-overflow-style:none}.eb>.eb-bar-h,.eb>.eb-bar-v{z-index:1;-webkit-box-sizing:border-box;box-sizing:border-box}.eb>.eb-bar-v{left:auto;top:0;right:0;bottom:0;width:16px;padding:4px}.eb.eb-visible-h>.eb-bar-v{bottom:8px}.eb>.eb-bar-h{left:0;top:auto;right:0;bottom:0;height:16px;padding:4px}.eb.eb-visible-v>.eb-bar-h{right:8px}.eb>.eb-bar-h>.eb-track,.eb>.eb-bar-v>.eb-track{-webkit-transition:background-color .3s;transition:background-color .3s;border-radius:20px;width:100%;height:100%}.eb>.eb-bar-v>.eb-track{min-height:150px}.eb>.eb-bar-h>.eb-track{min-width:150px}.eb.eb-visible-h.eb-scrolling-phantom>.eb-bar-h .eb-track,.eb.eb-visible-h>.eb-bar-h:hover .eb-track,.eb.eb-visible-v.eb-scrolling-phantom>.eb-bar-v .eb-track,.eb.eb-visible-v>.eb-bar-v:hover .eb-track{-webkit-transition:background-color .1s;transition:background-color .1s;background-color:rgba(0,0,0,.1)}.eb>.eb-bar-v .eb-thumb{width:100%;min-height:50px}.eb>.eb-bar-h .eb-thumb{height:100%;min-width:50px}.eb.eb-visible-h>.eb-bar-h .eb-thumb,.eb.eb-visible-v>.eb-bar-v .eb-thumb{-webkit-transition:background-color .3s;transition:background-color .3s;background-color:rgba(0,0,0,.15);border-radius:20px}.eb.eb-visible-h.eb-scrolling-phantom>.eb-bar-h .eb-thumb,.eb.eb-visible-h>.eb-bar-h:hover .eb-thumb,.eb.eb-visible-v.eb-scrolling-phantom>.eb-bar-v .eb-thumb,.eb.eb-visible-v>.eb-bar-v:hover .eb-thumb{-webkit-transition:background-color .1s;transition:background-color .1s;background-color:rgba(0,0,0,.3)}");var n="hide-native-bar";function r(){var e=document.createElement("div");e.style.position="absolute",e.style.overflow="hidden";var l=document.createElement("div");l.style.position="relative",l.style.overflow="hidden";var o=document.createElement("div");return o.style.position="relative",l.appendChild(o),e.appendChild(l),{scrollBarBox:e,scrollBarTrack:l,scrollBarThumb:o}}function c(l){l.scrollHandler||(l.scrollHandler=s.throttle(function(){var e;l.isBinded&&(g(l),m(l),(e=l).scrollingClassTimeout&&clearTimeout(e.scrollingClassTimeout),s.addClass(e.scrollBox,i.clsBoxScrolling,e.config.clsBoxScrolling),e.scrollingClassTimeout=setTimeout(function(){s.removeClass(e.scrollBox,i.clsBoxScrolling,e.config.clsBoxScrolling),e.scrollingClassTimeout&&delete e.scrollingClassTimeout},e.config.scrollThrottle+5),e.scrollingPhantomClassTimeout&&clearTimeout(e.scrollingPhantomClassTimeout),s.addClass(e.scrollBox,i.clsBoxScrollingPhantom,e.config.clsBoxScrollingPhantom),e.scrollingPhantomClassTimeout=setTimeout(function(){s.removeClass(e.scrollBox,i.clsBoxScrollingPhantom,e.config.clsBoxScrollingPhantom),e.scrollingPhantomClassTimeout&&delete e.scrollingPhantomClassTimeout},e.config.scrollThrottle+e.config.scrollingPhantomDelay))},function(){return l.config.scrollThrottle}))}function B(e){e.wheelHandler&&(e.scrollCevBox.removeEventListener("wheel",e.wheelHandler,0),delete e.wheelHandler)}function h(e){e.resizeHandler&&(window.removeEventListener("resize",e.resizeHandler,0),delete e.resizeHandler)}function d(e){var l;e.scrollCevBox||(e.scrollBox=e.rootEl,e.scrollBoxClip=document.createElement("div"),e.scrollCev=e.rootEl.firstElementChild,e.scrollCevBox=document.createElement("div"),s.addClass(e.scrollBox,i.clsBox,e.config.clsBox),e.scrollBox.style.position="relative",e.scrollBox.style.overflow="hidden",s.addClass(e.scrollBoxClip,i.clsBoxClip,e.config.clsBoxClip),e.scrollBoxClip.style.height="100%",e.scrollBoxClip.style.width="100%",e.scrollBoxClip.style.overflow="hidden",e.scrollBoxClip.style.boxSizing="border-box",s.addClass(e.scrollCevBox,i.clsContent,e.config.clsContent),s.addClass(e.scrollCevBox,n),e.scrollCevBox.style.display="block",e.scrollCevBox.style.overflow="hidden",e.scrollCevBox.style.height="100%",e.scrollCevBox.style.width="100%",e.scrollBox.removeChild(e.scrollCev),e.scrollCevBox.appendChild(e.scrollCev),e.scrollBoxClip.appendChild(e.scrollCevBox),e.scrollBox.appendChild(e.scrollBoxClip),e.scrollCevBox.addEventListener("scroll",e.scrollHandler,0),e.mutationObserver=(l=e,("undefined"==typeof MutationObserver?"undefined":o(MutationObserver))===o(void 0)?null:new MutationObserver(s.throttle(function(){l.isBinded&&f(l)},function(){return l.config.observerThrottle}))),e.mutationObserver&&e.mutationObserver.observe(e.scrollCevBox,{childList:!0,characterData:!0,subtree:!0}))}function u(e){var l=void 0;e.barBehavior.vBarEnable&&e.barBehavior.vBarShow?(e.vBar||(l=r(),e.vBar={scrollBarBox:l.scrollBarBox,scrollBarTrack:l.scrollBarTrack,scrollBarThumb:l.scrollBarThumb},s.compatStyle(e.vBar.scrollBarBox,"userSelect","none"),e.scrollBox.appendChild(e.vBar.scrollBarBox),e.vBar.scrollBarThumb.addEventListener("mousedown",e.mouseDown,0),e.vBar.scrollBarThumb.addEventListener("touchstart",e.mouseDown,0)),s.addClass(e.vBar.scrollBarBox,i.clsBarV,e.config.clsBarV),s.addClass(e.vBar.scrollBarTrack,i.clsTrack,e.config.clsTrack),s.addClass(e.vBar.scrollBarThumb,i.clsThumb,e.config.clsThumb)):v(e),e.barBehavior.hBarEnable&&e.barBehavior.hBarShow?(e.hBar||(l=r(),e.hBar={scrollBarBox:l.scrollBarBox,scrollBarTrack:l.scrollBarTrack,scrollBarThumb:l.scrollBarThumb},s.compatStyle(e.hBar.scrollBarBox,"userSelect","none"),e.scrollBox.appendChild(e.hBar.scrollBarBox),e.hBar.scrollBarThumb.addEventListener("mousedown",e.mouseDown,0),e.hBar.scrollBarThumb.addEventListener("touchstart",e.mouseDown,0)),s.addClass(e.hBar.scrollBarBox,i.clsBarH,e.config.clsBarH),s.addClass(e.hBar.scrollBarTrack,i.clsTrack,e.config.clsTrack),s.addClass(e.hBar.scrollBarThumb,i.clsThumb,e.config.clsThumb)):b(e),function(e){if(e.vBar||e.hBar){var l=function(){var e=document.body,l=document.createElement("div"),o=document.createElement("div");l.className=n,l.style.position="absolute",l.style.pointerEvents="none",l.style.bottom="0",l.style.right="0",l.style.width="100px",l.style.height="100px",l.style.overflow="hidden",o.style.width="100%",o.style.height="100%",l.appendChild(o),e.appendChild(l);var r=o.offsetWidth,s=o.offsetHeight;l.style.overflow="scroll";var t=r-o.offsetWidth,a=s-o.offsetHeight;return e.removeChild(l),{v:t,h:a}}();e.vBar?(e.scrollCevBox.style.overflowY="scroll",e.scrollCevBox.style.width="calc(100% + "+l.v+"px)"):(e.scrollCevBox.style.overflowY="hidden",e.scrollCevBox.style.width="100%"),e.hBar?(e.scrollCevBox.style.overflowX="scroll",e.scrollCevBox.style.height="calc(100% + "+l.h+"px)"):(e.scrollCevBox.style.overflowX="hidden",e.scrollCevBox.style.height="100%")}else e.scrollCevBox.style.overflow="hidden",e.scrollCevBox.style.height="100%",e.scrollCevBox.style.width="100%"}(e)}function v(e){e.vBar&&(e.vBar.scrollBarThumb.removeEventListener("mousedown",e.mouseDown,0),e.vBar.scrollBarThumb.removeEventListener("touchstart",e.mouseDown,0),e.scrollBox.removeChild(e.vBar.scrollBarBox),delete e.vBar)}function b(e){e.hBar&&(e.hBar.scrollBarThumb.removeEventListener("mousedown",e.mouseDown,0),e.hBar.scrollBarThumb.removeEventListener("touchstart",e.mouseDown,0),e.scrollBox.removeChild(e.hBar.scrollBarBox),delete e.hBar)}function g(e){var l=0,o=0;e.scrollBoxClip.style.width="100%",e.scrollBoxClip.style.height="100%",e.vBar&&(e.vBar.scrollBarBox.style.display=""),e.hBar&&(e.hBar.scrollBarBox.style.display=""),e.vBar&&e.scrollCevBox.clientHeight<e.scrollCevBox.scrollHeight&&(l=e.vBar.scrollBarBox.clientWidth,e.config.barfloat||(e.scrollBoxClip.style.width="calc(100% - "+l+"px)"),e.vBar.show=0<l),e.hBar&&e.scrollCevBox.clientWidth<e.scrollCevBox.scrollWidth&&(o=e.hBar.scrollBarBox.clientHeight,e.config.barfloat||(e.scrollBoxClip.style.height="calc(100% - "+o+"px)"),e.hBar.show=0<o),l<=0&&0<o?e.vBar&&e.scrollCevBox.clientHeight<e.scrollCevBox.scrollHeight&&(l=e.vBar.scrollBarBox.clientWidth,e.config.barfloat||(e.scrollBoxClip.style.width="calc(100% - "+l+"px)"),e.vBar.show=0<l):0<l&&o<=0&&e.hBar&&e.scrollCevBox.clientWidth<e.scrollCevBox.scrollWidth&&(o=e.hBar.scrollBarBox.clientHeight,e.config.barfloat||(e.scrollBoxClip.style.height="calc(100% - "+o+"px)"),e.hBar.show=0<o),l<=0&&e.vBar&&(e.vBar.scrollBarBox.style.display="none"),o<=0&&e.hBar&&(e.hBar.scrollBarBox.style.display="none"),function(e){var l=void 0;(l=e.vBar)&&l.show?(s.removeClass(e.scrollBox,i.clsBoxInvisibleBarV,e.config.clsBoxInvisibleBarV),s.addClass(e.scrollBox,i.clsBoxVisibleBarV,e.config.clsBoxVisibleBarV)):(s.removeClass(e.scrollBox,i.clsBoxVisibleBarV,e.config.clsBoxVisibleBarV),s.addClass(e.scrollBox,i.clsBoxInvisibleBarV,e.config.clsBoxInvisibleBarV));(l=e.hBar)&&l.show?(s.removeClass(e.scrollBox,i.clsBoxInvisibleBarH,e.config.clsBoxInvisibleBarH),s.addClass(e.scrollBox,i.clsBoxVisibleBarH,e.config.clsBoxVisibleBarH)):(s.removeClass(e.scrollBox,i.clsBoxVisibleBarH,e.config.clsBoxVisibleBarH),s.addClass(e.scrollBox,i.clsBoxInvisibleBarH,e.config.clsBoxInvisibleBarH))}(e)}function m(e){var l=void 0,o=void 0,r=void 0,s=void 0,t=void 0;(l=e.vBar)&&l.show&&(o=0==e.scrollCevBox.scrollHeight?1:e.scrollCevBox.clientHeight/e.scrollCevBox.scrollHeight,r=l.scrollBarTrack.clientHeight*o,l.scrollBarThumb.style.height=parseInt(Math.round(r))+"px",t=(l.scrollBarTrack.clientHeight-l.scrollBarThumb.clientHeight)/(e.scrollCevBox.scrollHeight-e.scrollCevBox.clientHeight),s=e.scrollCevBox.scrollTop*t,l.scrollBarThumb.style.top=parseInt(Math.round(s))+"px"),(l=e.hBar)&&l.show&&(o=0==e.scrollCevBox.scrollWidth?1:e.scrollCevBox.clientWidth/e.scrollCevBox.scrollWidth,r=l.scrollBarTrack.clientWidth*o,l.scrollBarThumb.style.width=parseInt(Math.round(r))+"px",t=(l.scrollBarTrack.clientWidth-l.scrollBarThumb.clientWidth)/(e.scrollCevBox.scrollWidth-e.scrollCevBox.clientWidth),s=e.scrollCevBox.scrollLeft*t,l.scrollBarThumb.style.left=parseInt(Math.round(s))+"px")}function x(e,l){var o,n,r;e.nextTickHandler=l,c(e),(o=e).mouseDown||(o.mouseDown=function(e){if(!o.isBinded)return!1;if(!e.targetTouches&&1!==e.which)return!1;var l=e.targetTouches?e.targetTouches[0]:e;if(o.vBar&&this==o.vBar.scrollBarThumb)o.vBar.barDragging=!0,o.vBar.startMouse=l.clientY-o.vBar.scrollBarThumb.getBoundingClientRect().top;else{if(!o.hBar||this!=o.hBar.scrollBarThumb)return!1;o.hBar.barDragging=!0,o.hBar.startMouse=l.clientX-o.hBar.scrollBarThumb.getBoundingClientRect().left}s.addClass(o.scrollBox,i.clsBoxDragging,o.config.clsBoxDragging),o.draggingPhantomClassTimer&&clearTimeout(o.draggingPhantomClassTimer),s.addClass(o.scrollBox,i.clsBoxDraggingPhantomClass,o.config.clsBoxDraggingPhantomClass),document.addEventListener("mousemove",o.mouseMove,1),document.addEventListener("mouseup",o.mouseUp,1),document.addEventListener("touchmove",o.mouseMove,1),document.addEventListener("touchend",o.mouseUp,1),e.preventDefault(),e.stopPropagation()}),(n=e).mouseMove||(n.mouseMove=s.throttle(function(e){if(n.isBinded){var l=e.targetTouches?e.targetTouches[0]:e;r=l,i=a=t=s=void 0,(s=(o=n).vBar)&&s.barDragging&&s.show&&((t=r.clientY-s.scrollBarTrack.getBoundingClientRect().top)<=s.startMouse&&(a=0),t>s.startMouse&&(a=t-s.startMouse),a+s.scrollBarThumb.clientHeight>=s.scrollBarTrack.clientHeight&&(a=s.scrollBarTrack.clientHeight-s.scrollBarThumb.clientHeight),i=(o.scrollCevBox.scrollHeight-o.scrollCevBox.clientHeight)/(s.scrollBarTrack.clientHeight-s.scrollBarThumb.clientHeight),o.scrollCevBox.scrollTop=a*i),(s=o.hBar)&&s.barDragging&&s.show&&((t=r.clientX-s.scrollBarTrack.getBoundingClientRect().left)<=s.startMouse&&(a=0),t>s.startMouse&&(a=t-s.startMouse),a+s.scrollBarThumb.clientWidth>=s.scrollBarTrack.clientWidth&&(a=s.scrollBarTrack.clientWidth-s.scrollBarThumb.clientWidth),i=(o.scrollCevBox.scrollWidth-o.scrollCevBox.clientWidth)/(s.scrollBarTrack.clientWidth-s.scrollBarThumb.clientWidth),o.scrollCevBox.scrollLeft=a*i)}var o,r,s,t,a,i},function(){return n.config.draggerThrottle},function(e){e.stopPropagation()})),(r=e).mouseUp||(r.mouseUp=function(e){r.isBinded&&(r.vBar&&(r.vBar.barDragging=!1),r.hBar&&(r.hBar.barDragging=!1),s.removeClass(r.scrollBox,i.clsBoxDragging,r.config.clsBoxDragging),r.draggingPhantomClassTimer&&clearTimeout(r.draggingPhantomClassTimer),r.draggingPhantomClassTimer=setTimeout(function(){s.removeClass(r.scrollBox,i.clsBoxDraggingPhantomClass,r.config.clsBoxDraggingPhantomClass),r.draggingPhantomClassTimer&&delete r.draggingPhantomClassTimer},r.config.draggingPhantomDelay),document.removeEventListener("mousemove",r.mouseMove,1),document.removeEventListener("mouseup",r.mouseUp,1),document.removeEventListener("touchmove",r.mouseMove,1),document.removeEventListener("touchend",r.mouseUp,1),e.stopPropagation())})}function l(e){var c,l;d(e),u(e),(c=e).config.preventParentScroll?c.wheelHandler||(c.wheelHandler=function(e){if(c.isBinded){if(1<=c.visibleArea)return!1;var l=c.scrollCevBox.scrollHeight-c.scrollCevBox.clientHeight,o=c.scrollCevBox.scrollTop,r=e.deltaY<0,s=0<e.deltaY;if(o<=0&&r||l<=o&&s)return e.preventDefault(),!1;var t=c.scrollCevBox.scrollHeight-c.scrollCevBox.clientHeight,a=c.scrollCevBox.scrollLeft,i=e.deltaX<0,n=0<e.deltaX;return a<=0&&i||t<=a&&n?(e.preventDefault(),!1):(e.stopPropagation(),!0)}},c.scrollCevBox.addEventListener("wheel",c.wheelHandler,0)):B(c),(l=e).config.resizeRefresh?l.resizeHandler||(l.resizeHandler=s.debounce(function(){l.isBinded&&f(l)},function(){return l.config.resizeDebounce}),window.addEventListener("resize",l.resizeHandler,0)):h(l)}function f(e){var l=function(){e&&(g(e),m(e))};e.nextTickHandler?e.nextTickHandler(l):l()}function C(e){var l,o,r;(l=e).draggingPhantomClassTimer&&clearTimeout(l.draggingPhantomClassTimer),l.scrollingClassTimeout&&clearTimeout(l.scrollingClassTimeout),l.scrollingPhantomClassTimeout&&clearTimeout(l.scrollingPhantomClassTimeout),h(e),B(e),v(o=e),b(o),(r=e).scrollCevBox&&(s.removeClass(r.scrollBox,i.clsBox,r.config.clsBox),r.scrollBox.style.position="",r.scrollBox.style.overflow="",r.scrollCev.style.display="",r.scrollBox.removeChild(r.scrollBoxClip),r.scrollCevBox.removeChild(r.scrollCev),r.scrollBox.appendChild(r.scrollCev),r.scrollCevBox.removeEventListener("scroll",r.scrollHandler,0),r.mutationObserver&&(r.mutationObserver.disconnect(),delete r.mutationObserver),delete r.scrollCev,delete r.scrollCevBox,delete r.scrollBoxClip,delete r.scrollBox)}function p(e,l){if(l)for(var o in l)e.config[o]=l[o];e.barBehavior=function(e){var l="show",o="show",r=void 0;(r=(e=e||"").match(/^\s*(show|hide|none)\s*$/i))?2<=r.length&&(l=o=r[1].toLowerCase()):(r=e.match(/^\s*(show|hide|none)\s+(show|hide|none)\s*$/i))&&3<=r.length&&(l=r[1].toLowerCase(),o=r[2].toLowerCase());var s=!0,t=!0;"none"==l?t=s=!1:"hide"==l&&(t=!(s=!0));var a=!0,i=!0;return"none"==o?i=a=!1:"hide"==o&&(i=!(a=!0)),{vBarEnable:s,vBarShow:t,hBarEnable:a,hBarShow:i}}(e.config.scrollBarBehavior)}return function(){function r(e,l){if(t(this,r),!e.firstElementChild)return{};this.rootEl=e,this.config={},p(this,a),x(this,l)}return e(r,[{key:"bind",value:function(e){return this.update(e),this._isBinded=!0,this}},{key:"update",value:function(e){return p(this,e),l(this),f(this),this}},{key:"refreshBar",value:function(){return f(this),this}},{key:"unBind",value:function(){return this._isBinded=!1,C(this),this}},{key:"isBinded",get:function(){return!!this._isBinded}}],[{key:"bind",value:function(e,l,o){return e._easyBar||(e._easyBar=new r(e,o).bind(l)),e._easyBar}},{key:"update",value:function(e,l){e._easyBar&&e._easyBar.update(l)}},{key:"get",value:function(e){return e._easyBar}},{key:"refreshBar",value:function(e){e._easyBar&&e._easyBar.refreshBar()}},{key:"unBind",value:function(e){e._easyBar&&(e._easyBar.unBind(),delete e._easyBar)}},{key:"install",value:function(o){o.directive("bar",{inserted:function(e,l){r.bind(e,l&&l.value?l.value:null,o.nextTick)},update:function(e,l){r.update(e,l&&l.value?l.value:null)},componentUpdated:function(e){r.refreshBar(e)},unbind:function(e){r.unBind(e)}}),Object.defineProperty(o.prototype,"$EasyBar",{get:function(){return r}})}}]),r}()});
+/*----------------------------------------*\
+    Vuebar
+\*----------------------------------------*/
+;(function(){
+    'use strict';
+
+
+
+    /*------------------------------------*\
+        Vuebar
+    \*------------------------------------*/
+    var Vuebar = {};
+    Vuebar.install = function(Vue, installOptions){
+
+
+        /*------------------------------------*\
+            Custom Directive Name
+        \*------------------------------------*/
+        installOptions = installOptions || {};
+        installOptions.directive = installOptions.directive || 'bar';
+
+
+        /*------------------------------------*\
+            Create State
+            - contains default values
+        \*------------------------------------*/
+        function createState(el){
+            el._vuebarState = {
+
+                // config with default values that may be overwritten on directive intialization
+                config: {
+                    scrollThrottle: 10,
+                    draggerThrottle: 10,
+                    resizeRefresh: true,
+                    observerThrottle: 100,
+                    resizeDebounce: 100,
+                    unselectableBody: true,
+                    overrideFloatingScrollbar: true,
+                    scrollingPhantomDelay: 1000,
+                    draggingPhantomDelay: 1000,
+                    preventParentScroll: false,
+                    useScrollbarPseudo: false, // experimental
+
+                    el1Class: 'vb',
+                    el1ScrollVisibleClass: 'vb-visible',
+                    el1ScrollInvisibleClass: 'vb-invisible',
+                    el1ScrollingClass: 'vb-scrolling',
+                    el1ScrollingPhantomClass: 'vb-scrolling-phantom',
+                    el1DraggingClass: 'vb-dragging',
+                    el1DraggingPhantomClass: 'vb-dragging-phantom',
+
+                    el2Class: 'vb-content',
+
+                    draggerClass: 'vb-dragger',
+                    draggerStylerClass: 'vb-dragger-styler',
+                },
+
+                // reference to binding
+                binding: null,
+
+                // references to directive DOM elements
+                el1: null,
+                el2: null,
+                dragger: null,
+
+                // show dragger
+                draggerEnabled: null,
+
+                // properties computed for internal directive logic & DOM manipulations
+                visibleArea: 0, // ratio between container height and scrollable content height
+                scrollTop: 0, // position of content scrollTop in px
+                barTop: 0, // position of dragger in px
+                barHeight: 0, // height of dragger in px
+                mouseBarOffsetY: 0, // relative position of mouse at the time of clicking on dragger
+                barDragging: false, // when the dragger is used
+
+                // reference to MutationObserver
+                mutationObserver: null,
+
+                // references to timeouts for DOM class manipulation
+                scrollingClassTimeout: null,
+                draggingClassTimeout: null,
+                scrollingPhantomClassTimeout: null,
+                draggingPhantomClassTimeout: null,
+
+                // references to a functions we'll need when removing events
+                barMousedown: null,
+                documentMousemove: null,
+                documentMouseup: null,
+                windowResize: null,
+                scrollHandler: null,
+                wheelHandler: null,
+
+            };
+            return el._vuebarState;
+        }
+
+
+
+
+        /*------------------------------------*\
+            Get State
+        \*------------------------------------*/
+        function getState(el){
+            return el._vuebarState;
+        }
+
+
+
+
+        /*------------------------------------*\
+            Mount Validation
+        \*------------------------------------*/
+        function markupValidation(el){
+            if (!el.firstChild) {
+                Vue.util.warn('(Vuebar) Element 1 with v-bar directive doesn\'t have required child element 2.');
+                return false;
+            }
+            return true;
+        }
+
+
+
+
+
+        /*------------------------------------*\
+            Computing Properties
+        \*------------------------------------*/
+        function computeVisibleArea(el){
+            var state = getState(el);
+            state.visibleArea = (state.el2.clientHeight / state.el2.scrollHeight);
+        }
+
+        function computeScrollTop(el){
+            var state = getState(el);
+            state.scrollTop = state.barTop * (state.el2.scrollHeight / state.el2.clientHeight);
+        }
+
+        function computeBarTop(el, event){
+            var state = getState(el);
+
+            // if the function gets called on scroll event
+            if (!event) {
+                state.barTop = state.el2.scrollTop * state.visibleArea;
+                return false;
+            } // else the function gets called when moving dragger with mouse
+
+
+            var relativeMouseY = (event.clientY - state.el1.getBoundingClientRect().top);
+            if (relativeMouseY <= state.mouseBarOffsetY) { // if bar is trying to go over top
+                state.barTop = 0;
+            }
+
+            if (relativeMouseY > state.mouseBarOffsetY) { // if bar is moving between top and bottom
+                state.barTop = relativeMouseY - state.mouseBarOffsetY;
+            }
+
+
+            if ( (state.barTop + state.barHeight ) >= state.el2.clientHeight ) { // if bar is trying to go over bottom
+                state.barTop = state.el2.clientHeight - state.barHeight;
+            }
+
+        }
+
+        function computeBarHeight(el){
+            var state = getState(el);
+            if (state.visibleArea >= 1) {
+                state.barHeight = 0;
+            } else {
+                state.barHeight = state.el2.clientHeight * state.visibleArea;
+            }
+        }
+
+
+
+
+        /*------------------------------------*\
+            Styles & DOM
+        \*------------------------------------*/
+        function createDragger(el){
+            var state = getState(el);
+
+            var dragger = document.createElement('div');
+            var draggerStyler = document.createElement('div');
+
+            dragger.className = state.config.draggerClass;
+
+            dragger.style.position = 'absolute';
+
+            if (!state.draggerEnabled) {
+                dragger.style.display = 'none';
+            }
+
+            draggerStyler.className = state.config.draggerStylerClass;
+
+            dragger.appendChild(draggerStyler);
+            state.el1.appendChild(dragger);
+
+            return dragger;
+        }
+
+
+        function updateDragger(el, options){
+            var options = options ? options : {};
+            var state = getState(el);
+
+            // setting dragger styles
+            state.dragger.style.height = parseInt( Math.round( state.barHeight)  ) + 'px';
+            state.dragger.style.top = parseInt( Math.round( state.barTop ) ) + 'px';
+            //state.dragger.style.height = Math.ceil( state.barHeight ) + 'px';
+            //state.dragger.style.top = Math.ceil( state.barTop ) + 'px';
+
+            // scrollbar visible / invisible classes
+            if (state.draggerEnabled && (state.visibleArea<1)) {
+                removeClass(state.el1, state.config.el1ScrollInvisibleClass);
+                addClass(state.el1, state.config.el1ScrollVisibleClass);
+            } else {
+                removeClass(state.el1, state.config.el1ScrollVisibleClass);
+                addClass(state.el1, state.config.el1ScrollInvisibleClass);
+            }
+
+
+
+            if (options.withScrollingClasses) {
+
+                // add scrolling class
+                addClass(state.el1, state.config.el1ScrollingClass);
+
+                // remove scrolling class
+                state.scrollingClassTimeout ?
+                    clearTimeout(state.scrollingClassTimeout) : null;
+                state.scrollingClassTimeout = setTimeout(function() {
+                    removeClass(state.el1, state.config.el1ScrollingClass);
+                }, state.config.scrollThrottle + 5);
+
+
+
+                // add phantom scrolling class
+                addClass(state.el1, state.config.el1ScrollingPhantomClass);
+
+                // remove phantom scrolling class
+                state.scrollingPhantomClassTimeout ?
+                    clearTimeout(state.scrollingPhantomClassTimeout) : null;
+                state.scrollingPhantomClassTimeout = setTimeout(function() {
+                    removeClass(state.el1, state.config.el1ScrollingPhantomClass);
+                }, state.config.scrollThrottle + state.config.scrollingPhantomDelay);
+
+            }
+
+        }
+
+
+
+        // this is an experimental feature
+        // - it works only on chrome and safari
+        // - instead of hiding scrollbar by overflowing it with its parent set to overflow:hidden
+        //   we hide scrollbar using pseudo-element selector ::-webkit-scrollbar
+        function hideScrollbarUsingPseudoElement(el){
+            var state = getState(el);
+            var idName = 'vuebar-pseudo-element-styles';
+            var selector = '.' + state.config.el2Class + '::-webkit-scrollbar';
+            var styleElm = document.getElementById(idName);
+            var sheet = null;
+
+            if (styleElm) {
+                sheet = styleElm.sheet;
+            } else {
+                styleElm = document.createElement('style');
+                styleElm.id = idName;
+                document.head.appendChild(styleElm);
+                sheet = styleElm.sheet;
+            }
+
+            // detect if there is a rule already added to the selector
+            var ruleExists = false;
+            for(var i=0, l=sheet.rules.length; i<l; i++){
+                var rule = sheet.rules[i];
+                if (rule.selectorText == selector) {
+                    ruleExists = true;
+                }
+            }
+
+            // if there is rule added already then don't continue
+            if ( ruleExists ) { return false }
+
+            // insert rule
+            // - we only need to use insertRule and don't need to use addRule at all
+            //   because we're only targeting chrome & safari browsers
+            if (sheet.insertRule) {
+                sheet.insertRule(selector + '{display:none}', 0);
+            }
+
+        }
+
+
+
+
+        function preventParentScroll(el, event){
+            var state = getState(el);
+
+            if (state.visibleArea >= 1) {
+                return false;
+            }
+
+            var scrollDist = state.el2.scrollHeight - state.el2.clientHeight;
+            var scrollTop = state.el2.scrollTop;
+
+            var wheelingUp = event.deltaY < 0;
+            var wheelingDown = event.deltaY > 0;
+
+            if ( (scrollTop <= 0) && wheelingUp) {
+                event.preventDefault();
+                return false;
+            }
+
+            if ( (scrollTop >= scrollDist) && wheelingDown) {
+                event.preventDefault();
+                return false;
+            }
+
+        }
+
+
+
+        function updateScroll(el){
+            var state = getState(el);
+            state.el2.scrollTop = state.scrollTop;
+        }
+
+
+
+
+        /*------------------------------------*\
+            Refresh
+        \*------------------------------------*/
+
+        function refreshScrollbar(el, options){
+            var options = options ? options : {};
+
+            if (options.immediate) {
+                computeVisibleArea(el);
+                computeBarTop(el);
+                computeBarHeight(el);
+                updateDragger(el);
+            }
+
+            Vue.nextTick(function(){
+                if ( !getState(el) ) { return false }
+                computeVisibleArea(el);
+                computeBarTop(el);
+                computeBarHeight(el);
+                updateDragger(el);
+            }.bind(this));
+        }
+
+
+
+
+        /*------------------------------------*\
+            Events & Handlers
+        \*------------------------------------*/
+
+        function scrollHandler(el){
+            var state = getState(el);
+            return throttle(function(event){
+                computeVisibleArea(el);
+                computeBarHeight(el); // fallback for an undetected content change
+                if (!state.barDragging) {
+                    computeBarTop(el);
+                    updateDragger(el, {withScrollingClasses: true});
+                }
+            }.bind(this), state.config.scrollThrottle);
+        }
+
+
+        function wheelHandler(el){
+            return function(event){
+                preventParentScroll(el, event);
+            }.bind(this);
+        }
+
+
+        function documentMousemove(el){
+            var state = getState(el);
+            return throttle(function(event){
+                computeBarTop(el, event);
+                updateDragger(el);
+                computeScrollTop(el);
+                updateScroll(el);
+            }.bind(this), state.config.draggerThrottle);
+        }
+
+
+        function documentMouseup(el){
+            var state = getState(el);
+            return function(event){
+
+                //
+                state.barDragging = false;
+
+                // enable user select
+                state.el1.style.userSelect = '';
+                state.config.unselectableBody ? compatStyle(document.body, 'UserSelect', '') : null;
+
+                // remove dragging class
+                removeClass(state.el1, state.config.el1DraggingClass);
+                state.draggingPhantomClassTimeout = setTimeout(function() {
+                    removeClass(state.el1, state.config.el1DraggingPhantomClass);
+                }, state.config.draggingPhantomDelay);
+
+
+                // remove events
+                document.removeEventListener('mousemove', state.documentMousemove, 0);
+                document.removeEventListener('mouseup', state.documentMouseup, 0);
+
+            }.bind(this);
+
+        }
+
+
+        function barMousedown(el){
+            var state = getState(el);
+            return function(event){
+
+                // don't do nothing if it's not left mouse button
+                if ( event.which!==1 ) { return false }
+
+                state.barDragging = true;
+                state.mouseBarOffsetY = event.offsetY;
+
+                // disable user select
+                state.el1.style.userSelect = 'none';
+                state.config.unselectableBody ? compatStyle(document.body, 'UserSelect', 'none') : null;
+
+                // add dragging class
+                addClass(state.el1, state.config.el1DraggingClass);
+                state.draggingPhantomClassTimeout ?
+                    clearTimeout(state.draggingPhantomClassTimeout) : null;
+                addClass(state.el1, state.config.el1DraggingPhantomClass);
+
+                // add events
+                document.addEventListener('mousemove', state.documentMousemove, 0);
+                document.addEventListener('mouseup', state.documentMouseup, 0);
+
+
+            }.bind(this);
+        }
+
+
+        function windowResize(el){
+            var state = getState(el);
+            return debounce(function(event){
+                refreshScrollbar(el);
+            }.bind(this), state.config.resizeDebounce);
+        }
+
+
+
+
+        function initMutationObserver(el){
+            if (typeof MutationObserver === typeof void 0) { return null }
+
+            var state = getState(el);
+
+            var observer = new MutationObserver(throttle(function(mutations) {
+                refreshScrollbar(el);
+            }, state.config.observerThrottle));
+
+            observer.observe(state.el2, {
+                childList: true,
+                characterData: true,
+                subtree: true,
+            });
+
+            return observer;
+        }
+
+
+
+
+        /*------------------------------------*\
+            Initialize Scrollbar
+        \*------------------------------------*/
+        function initScrollbar(el, kwargs){
+
+            // validate on directive bind if the markup is OK
+            if ( !markupValidation.call(this, el) ) { return false }
+
+            // safeguard to not initialize vuebar when it's already initialized
+            if (el._vuebarState) {
+                // and I'm actually curious if that can happen
+                Vue.util.warn('(Vuebar) Tried to initialize second time. If you see this please create an issue on https://github.com/DominikSerafin/vuebar with all relevent debug information. Thank you!');
+                return false;
+            }
+
+            // create state
+            var state = createState(el);
+
+            // get options object
+            // - it will come from directive binding (there is a 'value' property)
+            // - or it will come from public method direct options object
+            var options = kwargs.value ? kwargs.value : (kwargs ? kwargs : {});
+
+            // overwrite defaults with provided options
+            for (var key in options){
+                state.config[key] = options[key];
+            }
+
+            // detect browser
+            var browser = detectBrowser();
+
+            // dragger enabled?
+            var elNativeScrollbarWidth = getNativeScrollbarWidth(el.firstElementChild);
+            var overlayScrollbar = elNativeScrollbarWidth == 0;
+            state.draggerEnabled = ( (!overlayScrollbar) || state.config.overrideFloatingScrollbar ) ? 1 : 0;
+
+            // setup scrollbar "state"
+            state.binding = kwargs.value ? kwargs : null;
+            state.el1 = el;
+            state.el2 = el.firstElementChild;
+            state.dragger = createDragger(el);
+
+            // create and reference event listeners
+            state.barMousedown = barMousedown(el);
+            state.documentMousemove = documentMousemove(el);
+            state.documentMouseup = documentMouseup(el);
+            state.windowResize = windowResize(el);
+            state.scrollHandler = scrollHandler(el);
+            state.wheelHandler = wheelHandler(el);
+
+            // initialize and reference mutation observer
+            state.mutationObserver = initMutationObserver(el);
+
+            // el1 styles and class
+            addClass(state.el1, state.config.el1Class);
+            state.el1.style.position = 'relative';
+            state.el1.style.overflow = 'hidden';
+
+            // el2 styles and class
+            addClass(state.el2, state.config.el2Class);
+            state.el2.style.display = 'block';
+            state.el2.style.overflowX = 'hidden';
+            state.el2.style.overflowY = 'scroll';
+            state.el2.style.height = '100%';
+
+            // do the magic
+            if (state.draggerEnabled) {
+
+                // hide original browser scrollbar using pseudo css selectors (only chrome & safari)
+                if ( state.config.useScrollbarPseudo && (browser.chrome || browser.safari) ) {
+                    state.el2.style.width = '100%';
+                    hideScrollbarUsingPseudoElement(el);
+                }
+
+                // hide original browser overlay scrollbar and add padding to compensate for that
+                else if (overlayScrollbar) {
+                    /* state.el2.style.width = 'calc(100% + ' + 20 + 'px)';
+                    compatStyle(state.el2, 'BoxSizing', 'border-box'); */
+                    state.el2.style.width = '100%';
+                    compatStyle(state.el2, 'BoxSizing', 'content-box');
+                    state.el2.style.paddingRight = '20px';
+                }
+
+                // hide original browser scrollbar behind element edges and hidden overflow
+                else {
+                    state.el2.style.width = 'calc(100% + ' + elNativeScrollbarWidth + 'px)';
+                }
+
+            }
+
+            // add events
+            // - wheel event is only needed when preventParentScroll option is enabled
+            // - resize event is only needed when resizeRefresh option is enabled
+            state.el2.addEventListener('scroll', state.scrollHandler, 0);
+            state.dragger.addEventListener('mousedown', state.barMousedown, 0);
+            state.config.preventParentScroll ? state.el2.addEventListener('wheel', state.wheelHandler, 0) : null;
+            state.config.resizeRefresh ? window.addEventListener('resize', state.windowResize, 0) : null;
+
+            // initial calculations using refresh scrollbar
+            refreshScrollbar(el, {immediate: true});
+
+        }
+
+
+
+
+        /*------------------------------------*\
+            Destroy Scrollbar
+        \*------------------------------------*/
+        function destroyScrollbar(el, options){
+            var options = options ? options : {};
+            var state = getState(el);
+            if (!state) return;
+
+            // clear events
+            state.dragger.removeEventListener('mousedown', state.barMousedown, 0);
+            state.el2.removeEventListener('scroll', state.scrollHandler, 0);
+            state.el2.removeEventListener('wheel', state.scrollHandler, 0);
+            window.removeEventListener('resize', state.windowResize, 0);
+
+            // disconnect mutation observer
+            state.mutationObserver ? state.mutationObserver.disconnect() : null;
+
+            // clear el1 classes
+            removeClass(state.el1, state.config.el1Class);
+            removeClass(state.el1, state.config.el1ScrollVisibleClass);
+            removeClass(state.el1, state.config.el1ScrollInvisibleClass);
+            removeClass(state.el1, state.config.el1ScrollingClass);
+            removeClass(state.el1, state.config.el1ScrollingPhantomClass);
+            removeClass(state.el1, state.config.el1DraggingClass);
+
+            // clear el1 styles
+            if (options.clearStyles) {
+                state.el1.style.position = '';
+                state.el1.style.overflow = '';
+            }
+
+            // clear el2 classes
+            removeClass(state.el2, state.config.el2Class);
+
+            // clear el2 styles
+            if (options.clearStyles) {
+                state.el2.style.display = '';
+                state.el2.style.overflowX = '';
+                state.el2.style.overflowY = '';
+                state.el2.style.msOverflowStyle = '';
+                state.el2.style.height = '';
+                state.el2.style.width = '';
+            }
+
+            // clear dragger
+            state.dragger.removeChild(state.dragger.firstChild);
+            state.el1.removeChild(state.dragger);
+
+            // clear timeouts that may be still running
+            state.scrollingPhantomClassTimeout ?
+                clearTimeout(state.scrollingPhantomClassTimeout) : null;
+            state.draggingPhantomClassTimeout ?
+                clearTimeout(state.draggingPhantomClassTimeout) : null;
+
+            // delete state object from element
+            delete el._vuebarState;
+
+        }
+
+
+
+
+
+
+        /*------------------------------------*\
+            Public Methods Install
+        \*------------------------------------*/
+        function publicMethods(){
+            return {
+                getState: getState,
+                initScrollbar: initScrollbar,
+                destroyScrollbar: destroyScrollbar,
+                refreshScrollbar: refreshScrollbar,
+            };
+        }
+        Vue.vuebar = publicMethods();
+        Vue.prototype.$vuebar = publicMethods();
+
+
+
+
+
+        /*------------------------------------*\
+            Directive Install
+        \*------------------------------------*/
+        Vue.directive(installOptions.directive, {
+
+            inserted: function(el, binding, vnode){
+                initScrollbar.call(this, el, binding);
+            },
+
+            componentUpdated: function(el, binding, vnode, oldVnode){
+                refreshScrollbar.call(this, el);
+            },
+
+            unbind: function(el, binding, vnode, oldVnode){
+                // we shouldn't clearStyles because it actually doesn't matter that much
+                // the element will be always deleted on unbind and its styles also
+                // and if we do clear styles then it looks bad on transitions
+                destroyScrollbar.call(this, el, {clearStyles: false});
+            },
+
+        });
+
+
+
+
+
+
+
+        /*------------------------------------*\
+            Debounce Helper
+            https://remysharp.com/2010/07/21/throttling-function-calls
+        \*------------------------------------*/
+        function debounce(fn, delay) {
+            var timer = null;
+            return function () {
+                var context = this, args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    fn.apply(context, args);
+                }, delay);
+            };
+        };
+
+
+
+
+        /*------------------------------------*\
+            Throttle Helper
+            https://remysharp.com/2010/07/21/throttling-function-calls
+        \*------------------------------------*/
+        function throttle(fn, threshhold, scope) {
+            threshhold || (threshhold = 250);
+            var last,
+                deferTimer;
+            return function () {
+                var context = scope || this;
+
+                var now = +new Date,
+                    args = arguments;
+                if (last && now < last + threshhold) {
+                    // hold on to it
+                    clearTimeout(deferTimer);
+                    deferTimer = setTimeout(function () {
+                        last = now;
+                        fn.apply(context, args);
+                    }, threshhold);
+                } else {
+                    last = now;
+                    fn.apply(context, args);
+                }
+            }
+        }
+
+
+
+        /*------------------------------------*\
+            Style Vendor Prefixes Helper
+        \*------------------------------------*/
+        function compatStyle(element, property, value) {
+            element.style['webkit' + property] = value;
+            element.style['moz' + property] = value;
+            element.style['ms' + property] = value;
+            element.style['o' + property] = value;
+            element.style[ property.slice(0,1).toLowerCase() + property.substring(1) ] = value;
+        }
+
+
+
+        /*------------------------------------*\
+            Class Manipulation Helpers
+            https://plainjs.com/javascript/attributes/adding-removing-and-testing-for-classes-9/
+        \*------------------------------------*/
+        function hasClass(el, className) {
+            return el.classList ? el.classList.contains(className) : new RegExp('\\b'+ className+'\\b').test(el.className);
+        }
+
+        function addClass(el, className) {
+            if (el.classList) el.classList.add(className);
+            else if (!hasClass(el, className)) el.className += ' ' + className;
+        }
+
+        function removeClass(el, className) {
+            if (el.classList) el.classList.remove(className);
+            else el.className = el.className.replace(new RegExp('\\b'+ className+'\\b', 'g'), '');
+        }
+
+
+
+
+
+        /*------------------------------------*\
+            Browser Detection Helper
+        \*------------------------------------*/
+        function detectBrowser(){
+
+            // get ie version helper
+            function getIEVersion() {
+                var match = window.navigator.userAgent.match(/(?:MSIE |Trident\/.*; rv:)(\d+)/);
+                return match ? parseInt(match[1]) : void 0;
+            }
+
+            // user agent & vendor
+            var ua = window.navigator.userAgent;
+            var vendor = window.navigator.vendor;
+
+            // chrome
+            var chrome = (
+                (ua.toLowerCase().indexOf('chrome') > -1) && (vendor.toLowerCase().indexOf('google') > -1)
+            );
+
+            // edge
+            var edge = ua.indexOf('Edge') > -1;
+
+            // safari
+            var safari = !!window.safari || ((ua.toLowerCase().indexOf('safari') > -1) && (vendor.toLowerCase().indexOf('apple') > -1));
+
+            // internet explorer
+            var ie8 = getIEVersion() == 8;
+            var ie9 = getIEVersion() == 9;
+            var ie10 = getIEVersion() == 10;
+            var ie11 = getIEVersion() == 11;
+            var ie = ie8 || ie9 || ie10 || ie11;
+
+            // is it mobile browser?
+            // regex below thanks to http://detectmobilebrowsers.com/
+            var uaOrVendor = ua || vendor || window.opera;
+            var mobile = (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(uaOrVendor)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(uaOrVendor.substr(0,4)));
+
+            // construct return object
+            return {
+                edge: edge,
+                chrome: chrome,
+                safari: safari,
+                mobile: mobile,
+                ie: ie,
+                ie8: ie8,
+                ie9: ie9,
+                ie10: ie10,
+                ie11: ie11,
+            };
+
+        }
+
+
+        /*------------------------------------*\
+            Calculate scrollbar width in element
+            - if the width is 0 it means the scrollbar is floated/overlayed
+            - accepts "container" paremeter because ie & edge can have different
+              scrollbar behaviors for different elements using '-ms-overflow-style'
+        \*------------------------------------*/
+        function getNativeScrollbarWidth(container) {
+            var container = container ? container : document.body;
+
+            var fullWidth = 0;
+            var barWidth = 0;
+
+            var wrapper = document.createElement('div');
+            var child = document.createElement('div');
+
+            wrapper.style.position = 'absolute';
+            wrapper.style.pointerEvents = 'none';
+            wrapper.style.bottom = '0';
+            wrapper.style.right = '0';
+            wrapper.style.width = '100px';
+            wrapper.style.overflow = 'hidden';
+
+            wrapper.appendChild(child);
+            container.appendChild(wrapper);
+
+            fullWidth = child.offsetWidth;
+            child.style.width = '100%';
+            wrapper.style.overflowY = 'scroll';
+            barWidth = fullWidth - child.offsetWidth;
+
+            container.removeChild(wrapper);
+
+            return barWidth;
+        }
+
+
+
+
+    };
+
+
+
+    /*------------------------------------*\
+        Expose / Autoinstall
+    \*------------------------------------*/
+    if (typeof exports === 'object' && typeof module === 'object') {
+        module.exports = Vuebar;
+    } else if (typeof define === 'function' && define.amd) {
+        define(function () { return Vuebar });
+    } else if (typeof window !== typeof void 0) {
+        window.Vuebar = Vuebar;
+    }
+
+    if (typeof Vue !== typeof void 0) {
+        Vue.use(Vuebar);
+    }
+
+
+
+
+})();

@@ -2,6 +2,7 @@ var HistoryC = {
   template: vuedata.data.pages.history,
   props:{
     vbcd:Object,
+    vlng:Object,
     vicons:Object,
   },
   data () {

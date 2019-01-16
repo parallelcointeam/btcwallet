@@ -22,7 +22,7 @@
 	"label":"Ознака",
 	"perpage":"по страни",
 	"paginated":"Пагинација",
-	"senttransactionshistory":"Историја послатихтрансакција",
+	"senttransactionshistory":"Историја послатих трансакција",
 	"requestpaymentshistory":"Историја примљених трансакција",
 	"message":"Порука"
 

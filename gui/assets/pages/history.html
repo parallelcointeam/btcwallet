@@ -1,10 +1,9 @@
-<div class="flx fcl fii bxs" v-bar>
+<div class="tile is-ancestor">
 
-      <div class="flx frw fii">
-        <div class="flx fcl fii">
-           <h2>Latest Transactions</h2>
-<div id="transactions_history">
-          <b-field grouped group-multiline>
+  <div class="tile is-parent"  v-bar>
+    <div class="tile is-child box is-radiusless">
+      <p class="title" v-html="vlng.senttransactionshistory"></p>
+    <b-field grouped group-multiline>
             <b-select v-model="perPage" :disabled="!isPaginated">
                 <option value="5">5 per page</option>
                 <option value="10">10 per page</option>
@@ -76,16 +75,6 @@
         </template>
     </b-table>
 
-</div>
-            
-
-
-          <div class="flx fii" v-bar>
-            <ul class="mrr">
-
-
-            </ul>
-  
-  
     </div>
-    </div>  </div>  </div>
+  </div>
+</div>

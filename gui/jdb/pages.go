@@ -18,6 +18,7 @@ var peers, _ = ioutil.ReadFile("./gui/assets/pages/peers.html")
 var blocks, _ = ioutil.ReadFile("./gui/assets/pages/blocks.html")
 var about, _ = ioutil.ReadFile("./gui/assets/pages/about.html")
 var help, _ = ioutil.ReadFile("./gui/assets/pages/help.html")
+var console, _ = ioutil.ReadFile("./gui/assets/pages/console.html")
 
 var settings, _ = ioutil.ReadFile("./gui/assets/pages/settings/settings.html")
 var ifc, _ = ioutil.ReadFile("./gui/assets/pages/settings/interface.html")
@@ -36,6 +37,7 @@ var VPG VPages = VPages{
 	"blocks":      string(blocks),
 	"about":       string(about),
 	"help":        string(help),
+	"console":     string(console),
 
 	"settings": string(settings),
 	"ifc":      string(ifc),
