@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/google/martian/log"
@@ -28,6 +29,7 @@ import (
 )
 
 type RPCInterface struct {
+	MSG                   interface{} `json="msg"`
 	createrawtransaction  *string
 	debuglevel            *string
 	decoderawtransaction  *btcjson.TxRawDecodeResult
@@ -51,7 +53,7 @@ type RPCInterface struct {
 	Getgenerate           *bool
 	Gethashespersec       *float64
 	Getheaders            *[]string
-	Getinfo               *btcjson.InfoChainResult
+	Getinfo               *btcjson.InfoWalletResult
 	Getmempoolinfo        *btcjson.GetMempoolInfoResult
 	Getmininginfo         *btcjson.GetMiningInfoResult
 	Getnettotals          *btcjson.GetNetTotalsResult
@@ -478,17 +480,18 @@ func (rpc *RPCInterface) GetBlockCount() {
 // getInfo handles a getinfo request by returning the a structure containing
 // information about the current state of btcwallet.
 // exist.
-func GetInfo(icmd interface{}, chainClient *chain.RPCClient) (interface{}, error) {
+func (rpc *RPCInterface) GetInfo() {
 	// Call down to pod for all of the information in this command known
 	// by them.
-	info, err := chainClient.GetInfo()
+	info, err := WLT.ChainClient().(*chain.RPCClient).GetInfo()
+	// info, err := chainClient.GetInfo()
 	if err != nil {
-		return nil, err
+		// return nil, err
 	}
 
 	bal, err := WLT.CalculateBalance(1)
 	if err != nil {
-		return nil, err
+		// return nil, err
 	}
 
 	// TODO(davec): This should probably have a database version as opposed
@@ -500,8 +503,7 @@ func GetInfo(icmd interface{}, chainClient *chain.RPCClient) (interface{}, error
 	// wallet architecture:
 	//  - unlocked_until
 	//  - errors
-
-	return info, nil
+	rpc.Getinfo = info
 }
 
 func decodeAddress(s string, params *chaincfg.Params) (btcutil.Address, error) {
@@ -1384,21 +1386,13 @@ func sendMany(icmd interface{}) (interface{}, error) {
 // payment address.  Leftover inputs not sent to the payment address or a fee
 // for the miner are sent back to a new address in the wallet.  Upon success,
 // the TxID for the created transaction is returned.
-func sendToAddress(icmd interface{}) (interface{}, error) {
-	cmd := icmd.(*btcjson.SendToAddressCmd)
+func (rpc *RPCInterface) SendToAddress(vaddress string, vlabel string, vamount interface{}) {
 
-	// Transaction comments are not yet supported.  Error instead of
-	// pretending to save them.
-	if !isNilOrEmpty(cmd.Comment) || !isNilOrEmpty(cmd.CommentTo) {
-		return nil, &btcjson.RPCError{
-			Code:    btcjson.ErrRPCUnimplemented,
-			Message: "Transaction comments are not yet supported",
-		}
-	}
+	amount, err := strconv.ParseFloat(vamount.(string), 64)
 
-	amt, err := btcutil.NewAmount(cmd.Amount)
+	amt, err := btcutil.NewAmount(amount)
 	if err != nil {
-		return nil, err
+		rpc.MSG = err
 	}
 
 	// Check that signed integer parameters are positive.
@@ -1408,12 +1402,17 @@ func sendToAddress(icmd interface{}) (interface{}, error) {
 
 	// Mock up map of address and amount pairs.
 	pairs := map[string]btcutil.Amount{
-		cmd.Address: amt,
+		vaddress: amt,
 	}
-
+	rpc.MSG = "neeeeeeeeeeeeeeee"
 	// sendtoaddress always spends from the default account, this matches bitcoind
-	return sendPairs(WLT, pairs, waddrmgr.DefaultAccountNum, 1,
-		txrules.DefaultRelayFeePerKb)
+	ff, _ := sendPairs(WLT, pairs, waddrmgr.DefaultAccountNum, 1, txrules.DefaultRelayFeePerKb)
+	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", ff)
+	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTaaaaaaa", amount)
+	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", vlabel)
+	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", vamount)
+	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTvvvvvT", vaddress)
+	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTmmmmmmmmmmmmmmmm", rpc.MSG)
 }
 
 // setTxFee sets the transaction fee per kilobyte added to transactions.
@@ -1759,7 +1758,7 @@ func verifyMessage(icmd interface{}) (interface{}, error) {
 // walletIsLocked handles the walletislocked extension request by
 // returning the current lock state (false for unlocked, true for locked)
 // of an account.
-func walletIsLocked(icmd interface{}) (interface{}, error) {
+func WalletIsLocked(icmd interface{}) (interface{}, error) {
 	return WLT.Locked(), nil
 }
 
@@ -1774,17 +1773,36 @@ func walletLock(icmd interface{}) (interface{}, error) {
 // walletPassphrase responds to the walletpassphrase request by unlocking
 // the wallet.  The decryption key is saved in the wallet until timeout
 // seconds expires, after which the wallet is locked.
-func walletPassphrase(icmd interface{}) (interface{}, error) {
-	cmd := icmd.(*btcjson.WalletPassphraseCmd)
+func (rpc *RPCInterface) WalletPassphrase(wpp string, tmo int64) {
 
-	timeout := time.Second * time.Duration(cmd.Timeout)
+	timeout := time.Second * time.Duration(tmo)
 	var unlockAfter <-chan time.Time
 	if timeout != 0 {
 		unlockAfter = time.After(timeout)
 	}
-	err := WLT.Unlock([]byte(cmd.Passphrase), unlockAfter)
-	return nil, err
+	rpc.MSG = WLT.Unlock([]byte(wpp), unlockAfter)
+	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaawppwppwppwppwppwppa", wpp)
+	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaarrrrrraaaaaaaaaaaaaaaaaaaaaaaaaatmotmotmotmotmotmoaa", tmo)
+	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", unlockAfter)
+	fmt.Println("ffffffffffffffffffffffffffffffffffffffffffffffffff", rpc.MSG)
+	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+	fmt.Println("aaaaaaaaaaaaaaaaaffffffffaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", rpc.MSG)
+
 }
+
+// func walletPassphrase(icmd interface{}) (interface{}, error) {
+// 	cmd := icmd.(*btcjson.WalletPassphraseCmd)
+
+// 	timeout := time.Second * time.Duration(cmd.Timeout)
+// 	var unlockAfter <-chan time.Time
+// 	if timeout != 0 {
+// 		unlockAfter = time.After(timeout)
+// 	}
+// 	err := WLT.Unlock([]byte(cmd.Passphrase), unlockAfter)
+// 	return nil, err
+// }
 
 // walletPassphraseChange responds to the walletpassphrasechange request
 // by unlocking all accounts with the provided old passphrase, and

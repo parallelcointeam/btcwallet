@@ -21,7 +21,9 @@ padding: 1.5rem;
   display: flex;
   flex-direction: column;
 }
-
+.box{
+  background-color: #CFCFCF;
+}
   .duo{
     padding-right: 32px'
   }

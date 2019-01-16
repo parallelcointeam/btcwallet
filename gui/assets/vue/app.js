@@ -29,21 +29,41 @@ created: function() {
   this.adrbk();
   this.lang();
   this.getBlockCount();
+  this.getInfo();
   this.timer = setInterval(this.ref, 1500)
   this.timer = setInterval(this.lang, 1500)
   this.timer = setInterval(this.getBlockCount, 500)
+  this.timer = setInterval(this.getInfo, 500)
   // this.timer = setInterval(this.adrbk, 500)
 },
+
 methods: {
   // processForm: function() {
   //   console.log({ name: this.name, email: this.email });
   //   alert('Processing');
   // },
   // rpc: function() { rpchandlers},
+  danger() {
+    this.$snackbar.open({
+        duration: 8000,
+        message: rpcinterface.data.MSG,
+        type: 'is-danger',
+        position: 'is-bottom',
+        actionText: 'close',
+        queue: false,
+        onAction: () => {
+            this.$toast.open({
+                message: 'Closed',
+                queue: false
+            })
+        }
+    })
+},
   swapComponent: function(component){this.component = component;},
   ref: function() { blockchaindata.getInfoData(); },
   adrbk: function() { addressbook.addressBookData(); },
   getBlockCount: function() { rpcinterface.getBlockCount(); },
+  getInfo: function() { rpcinterface.getInfo(); },
   lang: function() { language.languageData(vuedata.data.config.lang); },
   cancelAutoUpdate: function() { clearInterval(this.timer) }
 },
@@ -51,3 +71,5 @@ beforeDestroy() {
 clearInterval(this.timer)
 }
 });
+
+  

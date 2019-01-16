@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/parallelcointeam/mod/chain"
 	"github.com/parallelcointeam/mod/waddrmgr"
 	"github.com/parallelcointeam/mod/wallet"
 	"github.com/parallelcointeam/mod/wallet/txrules"
@@ -31,17 +30,6 @@ type SendToAddress struct {
 }
 
 func (k *BlockChain) GetInfoData() {
-	// Get Info
-	getinfo, err := WLT.ChainClient().(*chain.RPCClient).GetInfo()
-	if err != nil {
-	}
-	bal, err := WLT.CalculateBalance(1)
-	if err != nil {
-	}
-	getinfo.WalletVersion = int32(waddrmgr.LatestMgrVersion)
-	getinfo.Balance = bal.ToDUO()
-	getinfo.PaytxFee = float64(txrules.DefaultRelayFeePerKb)
-	k.GetInfo = getinfo
 
 	// List Transactions
 
@@ -60,15 +48,15 @@ func (k *BlockChain) GetInfoData() {
 	}
 	k.ListAllSendTransactions = listallsendtransactions
 
-	// Balance
-	var balance btcutil.Amount
-	accountName := "*"
-	if accountName == "*" {
-		balance, err = WLT.CalculateBalance(1)
-		if err != nil {
-		}
-	}
-	k.Balance = balance.ToDUO()
+	// // Balance
+	// var balance btcutil.Amount
+	// accountName := "*"
+	// if accountName == "*" {
+	// 	balance, err = WLT.CalculateBalance(1)
+	// 	if err != nil {
+	// 	}
+	// }
+	// k.Balance = balance.ToDUO()
 
 	// UnConfirmed
 	acctName := "default"
