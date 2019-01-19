@@ -30,6 +30,7 @@ import (
 
 type RPCInterface struct {
 	MSG                   interface{} `json="msg"`
+	Address               string      `json="address"`
 	createrawtransaction  *string
 	debuglevel            *string
 	decoderawtransaction  *btcjson.TxRawDecodeResult
@@ -473,8 +474,8 @@ func (rpc *RPCInterface) getBestBlockHash(icmd interface{}) (interface{}, error)
 // func (rpc *RPCInterface) GetBlockCount() {
 func (rpc *RPCInterface) GetBlockCount() {
 	blk := WLT.Manager.SyncedTo()
-	fmt.Println("sasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", blk.Height)
 	rpc.Getblockcount = blk.Height
+	rpc.MSG = "New block: " + fmt.Sprint(blk.Height)
 }
 
 // getInfo handles a getinfo request by returning the a structure containing
@@ -683,24 +684,22 @@ func renameAccount(icmd interface{}) (interface{}, error) {
 // error is returned.
 // TODO: Follow BIP 0044 and warn if number of unused addresses exceeds
 // the gap limit.
-func (rpc *RPCInterface) GetNewAddress(icmd interface{}) (interface{}, error) {
-	cmd := icmd.(*btcjson.GetNewAddressCmd)
-
+func (rpc *RPCInterface) GetNewAddress() {
 	acctName := "default"
-	if cmd.Account != nil {
-		acctName = *cmd.Account
-	}
 	account, err := WLT.AccountNumber(waddrmgr.KeyScopeBIP0044, acctName)
 	if err != nil {
-		return nil, err
+		rpc.MSG = err
 	}
 	addr, err := WLT.NewAddress(account, waddrmgr.KeyScopeBIP0044)
 	if err != nil {
-		return nil, err
+		rpc.MSG = err
 	}
 
 	// Return the new payment address string.
-	return addr.EncodeAddress(), nil
+	rpc.MSG = "Created new address:" + addr.EncodeAddress()
+	rpc.Address = addr.EncodeAddress()
+	fmt.Println("dsdsdsdsdsdsdsd", rpc.Address)
+	fmt.Println("MSGMSGMSGMSGMSGMSGMSGMSG", rpc.MSG)
 }
 
 // getRawChangeAddress handles a getrawchangeaddress request by creating
@@ -1404,10 +1403,13 @@ func (rpc *RPCInterface) SendToAddress(vaddress string, vlabel string, vamount i
 	pairs := map[string]btcutil.Amount{
 		vaddress: amt,
 	}
-	rpc.MSG = "neeeeeeeeeeeeeeee"
+
 	// sendtoaddress always spends from the default account, this matches bitcoind
-	ff, _ := sendPairs(WLT, pairs, waddrmgr.DefaultAccountNum, 1, txrules.DefaultRelayFeePerKb)
-	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", ff)
+	txid, _ := sendPairs(WLT, pairs, waddrmgr.DefaultAccountNum, 1, txrules.DefaultRelayFeePerKb)
+	rpc.MSG = txid
+	fmt.Println("TTTTwwwwwwwwwwwwwwwwwTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", rpc.MSG)
+	fmt.Println("txrules.DefaultRelayFeePerKb", txrules.DefaultRelayFeePerKb)
+	fmt.Println("TTTTwwwwwwwwwwwwwwwwwTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", rpc.MSG)
 	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTaaaaaaa", amount)
 	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", vlabel)
 	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", vamount)

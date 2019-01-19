@@ -1,85 +1,76 @@
 package gui
 
 import (
+	"fmt"
 	"net/url"
 
-	"github.com/parallelcointeam/mod/gui/jdb"
+	"github.com/parallelcointeam/mod/gui/apps"
+	"github.com/parallelcointeam/mod/gui/conf"
+	"github.com/parallelcointeam/mod/gui/libs"
 	"github.com/parallelcointeam/mod/gui/vue"
 	"github.com/parallelcointeam/mod/wallet"
 	"github.com/zserge/webview"
 )
 
 type VDATA struct {
-	Config jdb.InfConf       `json:"config"`
+	Config conf.Conf         `json:"config"`
 	Pages  map[string]string `json:"pages"`
 	Icons  map[string]string `json:"icons"`
 	Imgs   map[string][]byte `json:"imgs"`
 }
 
 func GUI(wlt *wallet.Wallet) {
+	apps.InitApps()
 	vue.WLT = wlt
-	// libs := jdb.VueLibs
-	// pages := jdb.VuePages
 	w := webview.New(webview.Settings{
 		Title:     "ParallelCoin - DUO - True Story",
 		Width:     1800,
 		Height:    960,
-		URL:       `data:text/html,` + url.PathEscape(string(jdb.VLB["apphtml"])),
+		URL:       `data:text/html,` + url.PathEscape(string(libs.APP["apphtml"])),
 		Debug:     true,
 		Resizable: false,
 	})
 	defer w.Exit()
 	w.Dispatch(func() {
-		// w.Bind("blockchaindata", []interface{}{(*btcjson.InfoWalletResult)(nil)})
 
 		w.Bind("blockchaindata", &vue.BlockChain{})
-		w.Bind("sendtoaddress", &vue.SendToAddress{})
+		// w.Bind("sendtoaddress", &vue.SendToAddress{})
 		w.Bind("language", &vue.Language{})
-		w.Bind("addressbook", &vue.AddressBook{})
-		w.Bind("addressbooklabel", &vue.AddressBookLabel{})
+		w.Bind("addressbook", &apps.AddressBook{})
+		w.Bind("addressbooklabel", &apps.AddressBookLabel{})
+		for mn, md := range vue.MODS {
+			w.Bind(mn, &md)
+			fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaawwwwwwww", mn)
+		}
+		fmt.Println("vue.MODSvue.MODSvue.MODSvue.MODSvue.MODSvue.MODSvue.MODSvue.MODSvue.MODSvue.MODSvue.MODSvue.MODSvue.MODSvue.MODS", vue.MODS)
+
+		w.Bind("reqpays", &vue.RequestedPaymentHistory{})
+		w.Bind("reqpay", &vue.RequestedPayment{})
 
 		w.Bind("rpcinterface", &vue.RPCInterface{})
 
-		// w.Bind("rpchandlers", &vue.RPCHandlers{})
-		// w.Bind("blockchaindata", &vue.BlockChain{})
-		//w.Bind("icons", &icons)
+		w.Bind("conf", &conf.Conf{})
+
 		w.Bind("vuedata", &VDATA{
-			Config: jdb.VCF,
-			Pages:  jdb.VPG,
-			Icons:  jdb.VIC,
-			Imgs:   jdb.VIM,
+			Config: conf.VCF,
+			Pages:  libs.PGS,
+			Icons:  libs.VIC,
+			Imgs:   libs.VIM,
 		})
 
-		w.InjectCSS(string(jdb.VLB["buefycss"]))
-		w.InjectCSS(string(jdb.VLB["fontawesome"]))
-		w.InjectCSS(string(jdb.VLB["materialdesignicons"]))
-		w.InjectCSS(string(jdb.VLB["vuelayerscss"]))
-		w.InjectCSS(string(jdb.VLB["scrollercss"]))
+		for _, c := range libs.CSS {
+			w.InjectCSS(string(c))
+		}
 
-		w.Eval(string(jdb.VLB["vue"]))
-		w.Eval(string(jdb.VLB["scroller"]))
-		w.Eval(string(jdb.VLB["buefyjs"]))
-		w.Eval(string(jdb.VLB["terminal"]))
-		w.Eval(string(jdb.VLB["ol"]))
-		w.Eval(string(jdb.VLB["umd"]))
+		for _, j := range libs.JSL {
+			w.Eval(string(j))
+		}
+		for _, v := range libs.VJS {
+			w.Eval(string(v))
+		}
 
-		// w.Eval(string(jdb.VLB["commands"]))
-		// w.Eval(string(jdb.VLB["tasks"]))
-
-		// w.Eval(string(jdb.VLB["settings"]))
-
-		w.Eval(string(jdb.VLB["homepage"]))
-		w.Eval(string(jdb.VLB["sendpage"]))
-		w.Eval(string(jdb.VLB["receivepage"]))
-		w.Eval(string(jdb.VLB["addressbookpage"]))
-		w.Eval(string(jdb.VLB["historypage"]))
-		w.Eval(string(jdb.VLB["peerspage"]))
-		w.Eval(string(jdb.VLB["blockspage"]))
-		w.Eval(string(jdb.VLB["helppage"]))
-		w.Eval(string(jdb.VLB["consolepage"]))
-
-		w.Eval(string(jdb.VLB["appjs"]))
-		w.InjectCSS(string(jdb.VLB["appcss"]))
+		w.Eval(string(libs.APP["appjs"]))
+		w.InjectCSS(string(libs.APP["appcss"]))
 
 	})
 

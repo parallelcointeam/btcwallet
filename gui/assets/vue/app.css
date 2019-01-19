@@ -104,10 +104,10 @@ cursor: pointer;
   --vt-margin: 10px;
   --vt-padding: 5px;
 
-  --vt-border: 3px solid lightgreen;
+  --vt-border: 3px solid #30cf30;
 
-  --vt-background-color: black;
-  --vt-color: lightgreen;
+  --vt-background-color: #303030;
+  --vt-color: #30cf30;
 }
 
 .vue-terminal,

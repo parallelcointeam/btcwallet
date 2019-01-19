@@ -45,12 +45,16 @@ func walletMain() error {
 	cfg = tcfg
 	defer func() {
 		if logRotator != nil {
+			fmt.Println("MOOOOZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
 			logRotator.Close()
+			fmt.Println("MOOOOZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 		}
 	}()
 
 	// Show version at startup.
 	log.Infof("Version %s", version())
+	fmt.Println("MOOOOZAAAAAAAAAAA222222222AAAA")
 
 	if cfg.Profile != "" {
 		go func() {

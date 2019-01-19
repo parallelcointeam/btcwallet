@@ -1,0 +1,26 @@
+  <form @submit.prevent.close="sendForm">
+        <div class="modal-card" style="width: auto">
+            <header class="modal-card-head">
+            <p class="modal-card-title">Last verification!</p>
+            <p class="modal-card-title">Label</p>
+            <span v-html=address></span>
+            <p class="modal-card-title">Amount:</p>
+            <span v-html=amount></span>
+            </header>
+            <section class="modal-card-body">
+                <b-field label="Passphrase">
+                    <b-input
+                        type="password"
+                        password-reveal
+                        v-model="passphrase"
+                        placeholder="Wallet Passphrase"
+                        required>
+                    </b-input>
+                </b-field>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button" type="button" @click="$parent.close()">Close</button>
+                <button type="submit" class="button is-primary">Send</button>
+            </footer>
+        </div>
+    </form>

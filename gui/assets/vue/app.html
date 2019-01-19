@@ -7,7 +7,6 @@
 </head>
 <body>
     <div id="app" class="">
-           
  <nav class="navbar box is-paddingless is-radiusless">
   <div class="navbar-brand">
     <span class="navbar-item" @click="swapComponent(HomeC)" v-html="vdt.data.icons.logo"></span>
@@ -17,6 +16,7 @@
       <span></span>
     </div>
   </div>
+           <span v-html="msg"></span>
 
   <div id="navMenuColorblack-example" class="navbar-menu">
     <div class="navbar-start">
@@ -74,7 +74,7 @@
           <p class="control">
               
           <b-field>
-            <b-select placeholder="Language" v-model="vuedata.data.config.lang" >
+            <b-select placeholder="Language" v-model="conf.data.Interface.lang" >
                 <option value="en">English</option>
                 <option value="rs">Српски</option>
                 <option value="fr">Français</option>
@@ -93,7 +93,7 @@
       
 
              
-<main :is="component" id="content" :vicons="vdt.data.icons" :vbcd="bcd.data" :vlng="lng.data"></main>
+<main :is="component" id="content" :vicons="vdt.data.icons" :vbcd="bcd.data" :vlng="lng.data" :vrpc="rpc.data"></main>
 
         <footer id="footer" class="">
 

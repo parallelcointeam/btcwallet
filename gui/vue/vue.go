@@ -1,16 +1,15 @@
 package vue
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/parallelcointeam/mod/waddrmgr"
 	"github.com/parallelcointeam/mod/wallet"
-	"github.com/parallelcointeam/mod/wallet/txrules"
 	"github.com/parallelcointeam/pod/btcjson"
-	"github.com/parallelcointeam/pod/btcutil"
 	// "github.com/parallelcointeam/pod/rpcclient"
 )
+
+type Modules map[string]interface{}
+
+var MODS Modules = Modules{}
 
 var WLT *wallet.Wallet
 
@@ -86,26 +85,5 @@ func (k *BlockChain) GetInfoData() {
 	// fmt.Println("listtransactionslisttransactionslisttransactionslisttransactionslisttransactions", k.ListTransactions)
 	// fmt.Println("tttttttttttttttttttttttttttttt", blk.Hash.String())
 	// fmt.Println("BalanceBalanceBalanceBalanceBalance", k.Balance)
-
-}
-func (k *SendToAddress) SendDUO(vaddress string, vlabel string, vamount interface{}) {
-	amount, err := strconv.ParseFloat(vamount.(string), 64)
-	if err != nil {
-	}
-	amt, err := btcutil.NewAmount(amount)
-	if err != nil {
-	}
-
-	pairs := map[string]btcutil.Amount{
-		vaddress: amt,
-	}
-
-	sendPairs(WLT, pairs, waddrmgr.DefaultAccountNum, 1, txrules.DefaultRelayFeePerKb)
-
-	fmt.Println("----------- address::", vaddress)
-	fmt.Println("----------- label::::", vlabel)
-	fmt.Println("----------- amount:::", vamount)
-
-	// fmt.Println("----------- amount:::", &legacyrpc.RPCHandlers)
 
 }

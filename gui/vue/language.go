@@ -12,6 +12,9 @@ type Language struct {
 	TrueStory               string `json:"truestory"`
 	Wallet                  string `json:"wallet"`
 	Interface               string `json:"interface"`
+	Network                 string `json:"network"`
+	Security                string `json:"security"`
+	Mining                  string `json:"mining"`
 	Overview                string `json:"overview"`
 	Send                    string `json:"send"`
 	Receive                 string `json:"receive"`

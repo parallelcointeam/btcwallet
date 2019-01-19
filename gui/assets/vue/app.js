@@ -12,6 +12,8 @@ var app = new Vue({
     lng: language,
     ab: addressbook,
     rpc:rpcinterface,
+    msg:"",
+    cnf:conf,
     // rpc: rpchandlers,
     // vpage: vdt.data.pages.home,
     timer: '',
@@ -26,27 +28,39 @@ components: {
 },
 created: function() {
   this.ref();
-  this.adrbk();
   this.lang();
   this.getBlockCount();
   this.getInfo();
-  this.timer = setInterval(this.ref, 1500)
-  this.timer = setInterval(this.lang, 1500)
+  this.config();
+  this.timer = setInterval(this.ref, 500)
+  this.timer = setInterval(this.lang, 500)
   this.timer = setInterval(this.getBlockCount, 500)
   this.timer = setInterval(this.getInfo, 500)
+
+  // this.timer = setInterval(this.danger, 500)
   // this.timer = setInterval(this.adrbk, 500)
 },
-
+watch:{
+  rpc :{
+      handler: function(val) {
+        if (val.data.MSG != this.msg){
+          this.msg = val.data.MSG
+          this.danger(val.data.MSG);
+        }
+      },
+      deep: true
+  }
+},
 methods: {
   // processForm: function() {
   //   console.log({ name: this.name, email: this.email });
   //   alert('Processing');
   // },
   // rpc: function() { rpchandlers},
-  danger() {
+  danger(val) {
     this.$snackbar.open({
         duration: 8000,
-        message: rpcinterface.data.MSG,
+        message: val,
         type: 'is-danger',
         position: 'is-bottom',
         actionText: 'close',
@@ -61,10 +75,10 @@ methods: {
 },
   swapComponent: function(component){this.component = component;},
   ref: function() { blockchaindata.getInfoData(); },
-  adrbk: function() { addressbook.addressBookData(); },
   getBlockCount: function() { rpcinterface.getBlockCount(); },
   getInfo: function() { rpcinterface.getInfo(); },
-  lang: function() { language.languageData(vuedata.data.config.lang); },
+  config: function() { conf.confData(); },
+  lang: function() { language.languageData(conf.data.Interface.lang); },
   cancelAutoUpdate: function() { clearInterval(this.timer) }
 },
 beforeDestroy() {
