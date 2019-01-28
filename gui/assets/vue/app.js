@@ -12,7 +12,8 @@ var app = new Vue({
     lng: language,
     ab: addressbook,
     rpc:rpcinterface,
-    msg:"",
+    msg:"Welcome!",
+    err:"Welcome!",
     cnf:conf,
     // rpc: rpchandlers,
     // vpage: vdt.data.pages.home,
@@ -45,7 +46,11 @@ watch:{
       handler: function(val) {
         if (val.data.MSG != this.msg){
           this.msg = val.data.MSG
-          this.danger(val.data.MSG);
+          this.warning(val.data.MSG);
+        }
+        if (val.data.ERR != this.err){
+          this.err = val.data.ERR
+          this.danger(val.data.ERR);
         }
       },
       deep: true
@@ -57,12 +62,12 @@ methods: {
   //   alert('Processing');
   // },
   // rpc: function() { rpchandlers},
-  danger(val) {
-    this.$snackbar.open({
-        duration: 8000,
+  warning(val) {
+    this.$toast.open({
+        duration: 5000,
         message: val,
-        type: 'is-danger',
-        position: 'is-bottom',
+        type: 'is-warning',
+        position: 'is-top',
         actionText: 'close',
         queue: false,
         onAction: () => {
@@ -72,7 +77,23 @@ methods: {
             })
         }
     })
-},
+  },
+  danger(val) {
+    this.$toast.open({
+        duration: 5000,
+        message: val,
+        type: 'is-danger',
+        position: 'is-top',
+        actionText: 'close',
+        queue: false,
+        onAction: () => {
+            this.$toast.open({
+                message: 'Closed',
+                queue: false
+            })
+        }
+    })
+  },
   swapComponent: function(component){this.component = component;},
   ref: function() { blockchaindata.getInfoData(); },
   getBlockCount: function() { rpcinterface.getBlockCount(); },

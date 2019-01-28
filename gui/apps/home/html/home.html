@@ -2,7 +2,6 @@
   <div class="tile is-4 is-vertical is-parent">
     <div class="tile is-child box is-radiusless">
       <p class="title" v-html="vlng.balances"></p>
-      <div v-html="conf.data.Interface.lang"></div>
     <p class="heading"><span v-html="vlng.total"></span></p>
       <p class="title"><span v-html="vicons.balance" class="icon is-large"></span><strong><span v-html="rpcinterface.data.Getinfo.balance" class="duo"></span></strong></p>
 <hr>  
@@ -24,6 +23,8 @@
       <span v-html="rpcinterface.data.Address"></span>
       <hr>
       <span v-html="rpcinterface.data.MSG"></span>
+      <hr>
+      <span v-html="rpcinterface.data.ERR"></span>
     </div>
   </div>
   <div class="tile is-parent">

@@ -9,7 +9,6 @@ var SendC = {
     return {
       address:"",
       label:"",
-      passphrase:"",
       amount:"",
       timeout:220,
       transactions: blockchaindata.data.listallsendtransactions,

@@ -30,6 +30,7 @@ import (
 
 type RPCInterface struct {
 	MSG                   interface{} `json="msg"`
+	ERR                   interface{} `json="err"`
 	Address               string      `json="address"`
 	createrawtransaction  *string
 	debuglevel            *string
@@ -453,13 +454,13 @@ func getBalance(icmd interface{}) (interface{}, error) {
 
 // getBestBlock handles a getbestblock request by returning a JSON object
 // with the height and hash of the most recently processed block.
-func (rpc *RPCInterface) getBestBlock(icmd interface{}) (interface{}, error) {
-	blk := WLT.Manager.SyncedTo()
-	result := &btcjson.GetBestBlockResult{
-		Hash:   blk.Hash.String(),
-		Height: blk.Height,
-	}
-	return result, nil
+func (rpc *RPCInterface) GetBestBlock() {
+	// blk := WLT.Manager.SyncedTo()
+	// result := &btcjson.GetBestBlockResult{
+	// 	Hash:   blk.Hash.String(),
+	// 	Height: blk.Height,
+	// }
+	// rpc.GetBestBlock = result
 }
 
 // getBestBlockHash handles a getbestblockhash request by returning the hash
@@ -688,11 +689,11 @@ func (rpc *RPCInterface) GetNewAddress() {
 	acctName := "default"
 	account, err := WLT.AccountNumber(waddrmgr.KeyScopeBIP0044, acctName)
 	if err != nil {
-		rpc.MSG = err
+		rpc.ERR = err
 	}
 	addr, err := WLT.NewAddress(account, waddrmgr.KeyScopeBIP0044)
 	if err != nil {
-		rpc.MSG = err
+		rpc.ERR = err
 	}
 
 	// Return the new payment address string.
@@ -1391,7 +1392,7 @@ func (rpc *RPCInterface) SendToAddress(vaddress string, vlabel string, vamount i
 
 	amt, err := btcutil.NewAmount(amount)
 	if err != nil {
-		rpc.MSG = err
+		rpc.ERR = err
 	}
 
 	// Check that signed integer parameters are positive.
@@ -1406,15 +1407,9 @@ func (rpc *RPCInterface) SendToAddress(vaddress string, vlabel string, vamount i
 
 	// sendtoaddress always spends from the default account, this matches bitcoind
 	txid, _ := sendPairs(WLT, pairs, waddrmgr.DefaultAccountNum, 1, txrules.DefaultRelayFeePerKb)
-	rpc.MSG = txid
-	fmt.Println("TTTTwwwwwwwwwwwwwwwwwTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", rpc.MSG)
-	fmt.Println("txrules.DefaultRelayFeePerKb", txrules.DefaultRelayFeePerKb)
-	fmt.Println("TTTTwwwwwwwwwwwwwwwwwTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", rpc.MSG)
-	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTaaaaaaa", amount)
-	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", vlabel)
-	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", vamount)
-	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTvvvvvT", vaddress)
-	fmt.Println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTmmmmmmmmmmmmmmmm", rpc.MSG)
+	rpc.MSG = "Inserting unconfirmed transaction " + txid
+	// fmt.Println("TTTTwwwwwwwwwwwwwwwwwTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", rpc.MSG)
+
 }
 
 // setTxFee sets the transaction fee per kilobyte added to transactions.
@@ -1782,7 +1777,7 @@ func (rpc *RPCInterface) WalletPassphrase(wpp string, tmo int64) {
 	if timeout != 0 {
 		unlockAfter = time.After(timeout)
 	}
-	rpc.MSG = WLT.Unlock([]byte(wpp), unlockAfter)
+	rpc.ERR = WLT.Unlock([]byte(wpp), unlockAfter)
 	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaawppwppwppwppwppwppa", wpp)
 	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaarrrrrraaaaaaaaaaaaaaaaaaaaaaaaaatmotmotmotmotmotmoaa", tmo)
 	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", unlockAfter)
